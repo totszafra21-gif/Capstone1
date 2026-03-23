@@ -87,14 +87,14 @@ export default function Home() {
 
           <div className="bg-white p-6 rounded-xl shadow text-center">
             <Image
-              src="/combo.jpg"
-              alt="Combo"
+              src="/C1.png"
+              alt="1pc Chicken with Rice"
               width={200}
               height={200}
               className="mx-auto"
             />
-            <h4 className="mt-4 font-semibold">Chicken Combo Meal</h4>
-            <p className="text-orange-500 font-bold">₱199</p>
+            <h4 className="mt-4 font-semibold">1pc Chicken with Rice</h4>
+            <p className="text-orange-500 font-bold">₱99</p>
           </div>
 
         </div>
@@ -102,36 +102,35 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-<footer className="bg-gray-900 text-white mt-10">
-  <div className="max-w-7xl mx-auto px-10 py-10 grid grid-cols-3 gap-8">
+      <footer className="bg-gray-900 text-white mt-10">
+        <div className="max-w-7xl mx-auto px-10 py-10 grid grid-cols-3 gap-8">
 
-    {/* About */}
-    <div>
-      <h4 className="text-xl font-bold mb-3 text-orange-400">
-        ELYAN Chicken Hub
-      </h4>
-      <p className="text-gray-300">
-        Serving crispy and delicious fried chicken, wings, and combo meals.
-        Made fresh and perfect for everyone.
-      </p>
+          {/* About */}
+          <div>
+            <h4 className="text-xl font-bold mb-3 text-orange-400">
+              ELYAN Chicken Hub
+            </h4>
+            <p className="text-gray-300">
+              Serving crispy and delicious fried chicken, wings, and combo meals.
+              Made fresh and perfect for everyone.
+            </p>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-lg font-semibold mb-3">Contact</h4>
+            <p className="text-gray-300">📍 Philippines</p>
+            <p className="text-gray-300">📞 0912-345-6789</p>
+            <p className="text-gray-300">✉️ elyanchickenhub@gmail.com</p>
+          </div>
+
+        </div>
+
+        <div className="text-center border-t border-gray-700 py-4 text-gray-400">
+          © 2026 ELYAN Chicken Hub. All rights reserved.
+        </div>
+      </footer>
+
     </div>
-    {/* Contact */}
-    <div>
-      <h4 className="text-lg font-semibold mb-3">Contact</h4>
-      <p className="text-gray-300">📍 Philippines</p>
-      <p className="text-gray-300">📞 0912-345-6789</p>
-      <p className="text-gray-300">✉️ elyanchickenhub@gmail.com</p>
-    </div>
-
-  </div>
-
-  <div className="text-center border-t border-gray-700 py-4 text-gray-400">
-    © 2026 ELYAN Chicken Hub. All rights reserved.
-  </div>
-</footer>
-
-    </div>
-
-    
   );
 }
