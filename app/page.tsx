@@ -15,6 +15,7 @@ export default function Home() {
           <Link href="/" className="hover:text-orange-500">Home</Link>
           <Link href="/menu" className="hover:text-orange-500">Menu</Link>
           <Link href="/cart" className="hover:text-orange-500">Cart</Link>
+          <Link href="/login" className="hover:text-orange-500">Login</Link>
         </div>
       </nav>
 
@@ -42,7 +43,7 @@ export default function Home() {
 
         {/* HERO IMAGE */}
         <Image
-          src="/logochick.png"
+          src="/chickens.png"
           alt="Chicken"
           width={400}
           height={400}
