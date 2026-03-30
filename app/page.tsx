@@ -103,7 +103,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="bg-gray-900 text-white mt-10">
-        <div className="max-w-7xl mx-auto px-10 py-10 grid grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-10 py-10  grid grid-cols-3 gap-8">
 
           {/* About */}
           <div>
