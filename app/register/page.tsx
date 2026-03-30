@@ -13,6 +13,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
@@ -34,7 +35,8 @@ export default function Register() {
     if (error) {
       setError(error.message);
     } else {
-      router.push("/");
+      setSuccess("Account created! Please check your email to confirm, then login.");
+      setTimeout(() => router.push("/login"), 3000);
     }
     setLoading(false);
   }
@@ -49,6 +51,7 @@ export default function Register() {
         </div>
 
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+        {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
 
         <form className="space-y-4" onSubmit={handleRegister}>
           <div>
