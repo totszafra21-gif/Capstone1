@@ -35,7 +35,7 @@ export default function Cart() {
       .select("id, quantity, menu_items(id, name, price, image)")
       .eq("user_id", user.id);
 
-    if (data) setCartItems(data as CartItem[]);
+    if (data) setCartItems(data as unknown as CartItem[]);
     setLoading(false);
   }
 
