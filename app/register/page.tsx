@@ -32,16 +32,22 @@ export default function Register() {
       options: { data: { full_name: name } },
     });
 
+    console.log("signUp data:", data);
+    console.log("signUp error:", error);
+
     if (error) {
       setError(error.message);
     } else if (data.user) {
-      await supabase.from("profiles").insert({
+      const { error: profileError } = await supabase.from("profiles").insert({
         id: data.user.id,
         full_name: name,
         email: email,
       });
+      console.log("profileError:", profileError);
       setSuccess("Account created! Redirecting to login...");
       setTimeout(() => router.push("/login"), 2000);
+    } else {
+      setError("Registration failed. Please try again.");
     }
     setLoading(false);
   }
