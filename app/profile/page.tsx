@@ -7,9 +7,11 @@ import Navbar from "../components/Navbar";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<{ full_name: string; email: string } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string; email: string; phone: string; address: string } | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -23,6 +25,8 @@ export default function ProfilePage() {
         setProfile(data);
         setFullName(data.full_name);
         setEmail(data.email);
+        setPhone(data.phone || "");
+        setAddress(data.address || "");
       }
     }
     fetchProfile();
@@ -35,12 +39,12 @@ export default function ProfilePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("profiles").update({ full_name: fullName, email }).eq("id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: fullName, email, phone, address }).eq("id", user.id);
     if (error) {
       setMessage("Failed to update profile.");
     } else {
       setMessage("Profile updated successfully!");
-      setProfile({ full_name: fullName, email });
+      setProfile({ full_name: fullName, email, phone, address });
     }
     setLoading(false);
   }
@@ -98,6 +102,26 @@ export default function ProfilePage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
                 required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-600">Phone Number</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Enter your phone number"
+                className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-600">Address</label>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Enter your address"
+                rows={3}
+                className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
               />
             </div>
 
