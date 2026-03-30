@@ -1,8 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// POST login or register
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   const { type, email, password, full_name } = await req.json();
 
   if (type === "register") {
@@ -24,7 +23,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ error: "Invalid type" }, { status: 400 });
 }
 
-// POST logout
 export async function DELETE() {
   const { error } = await supabase.auth.signOut();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

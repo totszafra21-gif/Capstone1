@@ -1,8 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// GET cart items for a user
-export async function GET(req: NextRequest) {
+export async function GET(req) {
   const user_id = req.nextUrl.searchParams.get("user_id");
   if (!user_id) return NextResponse.json({ error: "user_id required" }, { status: 400 });
 
@@ -15,8 +14,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(data);
 }
 
-// POST add item to cart
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   const { user_id, menu_item_id } = await req.json();
 
   const { data: existing } = await supabase
@@ -45,8 +43,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data);
 }
 
-// PATCH update quantity
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req) {
   const { id, quantity } = await req.json();
 
   if (quantity < 1) {
@@ -65,8 +62,7 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json(data);
 }
 
-// DELETE remove item from cart
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req) {
   const { id } = await req.json();
   const { error } = await supabase.from("cart").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
