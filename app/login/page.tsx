@@ -18,11 +18,12 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
-    } else {
+    } else if (data.session) {
+      router.refresh();
       router.push("/");
     }
     setLoading(false);
