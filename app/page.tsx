@@ -1,23 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import Navbar from "./components/Navbar";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100">
-
-      {/* NAVBAR */}
-      <nav className="flex justify-between items-center p-6 bg-white shadow">
-        <h1 className="text-2xl font-bold text-orange-500">
-          ELYAN Chicken Hub
-        </h1>
-
-        <div className="space-x-6">
-          <Link href="/" className="hover:text-orange-500">Home</Link>
-          <Link href="/menu" className="hover:text-orange-500">Menu</Link>
-          <Link href="/cart" className="hover:text-orange-500">Cart</Link>
-          <Link href="/login" className="hover:text-orange-500">Login</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* HERO SECTION */}
       <section className="flex items-center justify-between px-20 py-16">
