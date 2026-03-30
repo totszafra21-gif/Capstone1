@@ -26,7 +26,7 @@ export default function Register() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: name } },
@@ -34,9 +34,14 @@ export default function Register() {
 
     if (error) {
       setError(error.message);
-    } else {
-      setSuccess("Account created! Please check your email to confirm, then login.");
-      setTimeout(() => router.push("/login"), 3000);
+    } else if (data.user) {
+      await supabase.from("profiles").insert({
+        id: data.user.id,
+        full_name: name,
+        email: email,
+      });
+      setSuccess("Account created! Redirecting to login...");
+      setTimeout(() => router.push("/login"), 2000);
     }
     setLoading(false);
   }
