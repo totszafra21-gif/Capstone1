@@ -23,8 +23,7 @@ export default function Login() {
     if (error) {
       setError(error.message);
     } else if (data.session) {
-      router.refresh();
-      router.push("/");
+      window.location.href = "/";
     }
     setLoading(false);
   }
