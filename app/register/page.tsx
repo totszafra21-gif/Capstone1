@@ -10,6 +10,8 @@ export default function Register() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -47,6 +49,8 @@ export default function Register() {
         id: data.user.id,
         full_name: name,
         email: email,
+        phone: phone,
+        address: address,
       });
       console.log("profileError:", profileError);
       setSuccess("Account created! Redirecting to login...");
@@ -88,6 +92,28 @@ export default function Register() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-600">Phone Number</label>
+            <input
+              type="tel"
+              placeholder="Enter your phone number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-600">Address</label>
+            <textarea
+              placeholder="Enter your address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              rows={3}
               className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
               required
             />
