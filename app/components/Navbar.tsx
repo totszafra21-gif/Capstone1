@@ -29,6 +29,7 @@ export default function Navbar() {
         <Link href="/" className="hover:text-orange-500">Home</Link>
         <Link href="/menu" className="hover:text-orange-500">Menu</Link>
         <Link href="/cart" className="hover:text-orange-500">Cart</Link>
+        <Link href="/orders" className="hover:text-orange-500">My Orders</Link>
         {user ? (
           <div className="flex items-center gap-4">
             <Link href="/profile" className="hover:text-orange-500">Profile</Link>
