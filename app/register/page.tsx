@@ -45,7 +45,7 @@ export default function Register() {
     if (error) {
       setError(error.message);
     } else if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").insert({
+      const { error: profileError } = await supabase.from("profiles").upsert({
         id: data.user.id,
         full_name: name,
         email: email,
