@@ -22,6 +22,7 @@ export default function Cart() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState("cash");
 
   useEffect(() => {
     fetchCart();
@@ -57,7 +58,7 @@ export default function Cart() {
 
     const { data: order } = await supabase
       .from("orders")
-      .insert({ user_id: user.id, total, status: "pending" })
+      .insert({ user_id: user.id, total, status: "pending", payment_method: paymentMethod })
       .select()
       .single();
 
@@ -108,14 +109,32 @@ export default function Cart() {
                 </div>
               ))}
 
-              <div className="flex justify-between items-center mt-6">
-                <h2 className="text-xl font-bold">Total: ₱{total}</h2>
-                <button
-                  onClick={handleCheckout}
-                  className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600"
-                >
-                  Checkout
-                </button>
+              <div className="mt-6 border-t pt-6">
+                <h3 className="text-lg font-semibold mb-3">Payment Method</h3>
+                <div className="flex gap-4 mb-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" value="cash" checked={paymentMethod === "cash"} onChange={() => setPaymentMethod("cash")} />
+                    <span>💵 Cash on Delivery</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" value="gcash" checked={paymentMethod === "gcash"} onChange={() => setPaymentMethod("gcash")} />
+                    <span>📱 GCash</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} />
+                    <span>💳 Card</span>
+                  </label>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold">Total: ₱{total}</h2>
+                  <button
+                    onClick={handleCheckout}
+                    className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600"
+                  >
+                    Place Order
+                  </button>
+                </div>
               </div>
             </>
           )}
