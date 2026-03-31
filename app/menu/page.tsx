@@ -11,11 +11,13 @@ type MenuItem = {
   name: string;
   price: number;
   image: string;
+  category: string;
 };
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [message, setMessage] = useState("");
+  const [category, setCategory] = useState("all");
 
   useEffect(() => {
     async function fetchMenu() {
@@ -55,14 +57,27 @@ export default function MenuPage() {
       <Navbar />
 
       <section className="px-20 py-10">
-        <h2 className="text-4xl font-bold mb-8 text-center">Our Menu</h2>
+        <h2 className="text-4xl font-bold mb-6 text-center">Our Menu</h2>
+
+        {/* Category Dropdown */}
+        <div className="flex justify-center mb-8">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:border-orange-500 text-gray-700"
+          >
+            <option value="all">All</option>
+            <option value="meals">Meals</option>
+            <option value="wings">Wings</option>
+          </select>
+        </div>
 
         {message && (
           <p className="text-center text-green-600 font-semibold mb-4">{message}</p>
         )}
 
         <div className="grid grid-cols-3 gap-8">
-          {menuItems.map((item) => (
+          {menuItems.filter(item => category === "all" || item.category === category).map((item) => (
             <div key={item.id} className="bg-white p-6 rounded-xl shadow text-center">
               <Image src={item.image} alt={item.name} width={200} height={200} className="mx-auto" />
               <h4 className="mt-4 font-semibold">{item.name}</h4>
