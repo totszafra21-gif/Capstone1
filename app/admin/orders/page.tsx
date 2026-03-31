@@ -27,9 +27,16 @@ export default function AdminOrders() {
 
       const { data } = await supabase
         .from("orders")
-        .select("*, profiles!orders_user_id_fkey(full_name, email)")
+        .select("*")
         .order("created_at", { ascending: false });
-      if (data) setOrders(data as unknown as Order[]);
+      
+      if (data) {
+        const ordersWithProfiles = await Promise.all(data.map(async (order) => {
+          const { data: profile } = await supabase.from("profiles").select("full_name, email").eq("id", order.user_id).single();
+          return { ...order, profiles: profile };
+        }));
+        setOrders(ordersWithProfiles as unknown as Order[]);
+      }
     }
     checkAdminAndFetch();
   }, []);
