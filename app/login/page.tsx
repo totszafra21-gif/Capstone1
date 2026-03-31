@@ -23,7 +23,12 @@ export default function Login() {
     if (error) {
       setError(error.message);
     } else if (data.session) {
-      window.location.href = "/";
+      const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", data.session.user.id).single();
+      if (profile?.is_admin) {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/";
+      }
     }
     setLoading(false);
   }
