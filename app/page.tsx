@@ -4,28 +4,28 @@ import Navbar from "./components/Navbar";
 
 export default function Home() {
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden pt-20">
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-between px-20 py-4">
+      <section className="flex items-center justify-between px-24 py-5 bg-white shadow-sm">
 
         <div className="max-w-lg">
-          <h2 className="text-4xl font-bold mb-2">
+          <p className="text-orange-500 font-semibold text-sm mb-1 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
+          <h2 className="text-3xl font-extrabold mb-2 leading-tight">
             Crispy & Delicious <br />
             Fried Chicken 🍗
           </h2>
 
-          <p className="text-gray-600 mb-3 text-sm">
-            Welcome to ELYAN Chicken Hub. Enjoy our freshly cooked
-            fried chicken, wings, and combo meals made with love.
+          <p className="text-gray-500 mb-3 text-sm">
+            Enjoy our freshly cooked fried chicken, wings, and combo meals made with love.
           </p>
 
           <Link
             href="/menu"
-            className="bg-orange-500 text-white px-5 py-2 rounded-lg hover:bg-orange-600 text-sm"
+            className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 font-semibold shadow-md text-sm"
           >
-            Order Now
+            Order Now →
           </Link>
         </div>
 
@@ -33,39 +33,39 @@ export default function Home() {
         <Image
           src="/chickens.png"
           alt="Chicken"
-          width={280}
-          height={280}
-          className="rounded-xl"
+          width={220}
+          height={220}
+          className="rounded-2xl drop-shadow-xl"
         />
 
       </section>
 
       {/* FEATURED SECTION */}
-      <section className="px-20 py-2 flex-1">
+      <section className="px-24 py-5 flex-1">
 
-        <h3 className="text-xl font-bold mb-3 text-center">
-          Popular Meals
+        <h3 className="text-lg font-bold mb-3 text-center text-gray-800">
+          🔥 Popular Meals
         </h3>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="flex justify-center gap-6">
 
-          <div className="bg-white p-3 rounded-xl shadow text-center">
-            <Image src="/classic.png" alt="Fried Chicken" width={100} height={100} className="mx-auto" />
-            <h4 className="mt-2 font-semibold text-sm">Classic Fried Chicken</h4>
-            <p className="text-orange-500 font-bold text-sm">₱120</p>
-          </div>
+          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <Image src="/classic.png" alt="Fried Chicken" width={110} height={110} className="mx-auto rounded-xl" />
+            <h4 className="mt-2 font-semibold text-gray-800 text-sm">Classic Fried Chicken</h4>
+            <p className="text-orange-500 font-bold mt-1 text-sm">₱120</p>
+          </Link>
 
-          <div className="bg-white p-3 rounded-xl shadow text-center">
-            <Image src="/spicy.jpg" alt="Wings" width={100} height={100} className="mx-auto" />
-            <h4 className="mt-2 font-semibold text-sm">Spicy Chicken Wings</h4>
-            <p className="text-orange-500 font-bold text-sm">₱150</p>
-          </div>
+          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <Image src="/spicy.jpg" alt="Wings" width={110} height={110} className="mx-auto rounded-xl" />
+            <h4 className="mt-2 font-semibold text-gray-800 text-sm">Spicy Chicken Wings</h4>
+            <p className="text-orange-500 font-bold mt-1 text-sm">₱150</p>
+          </Link>
 
-          <div className="bg-white p-3 rounded-xl shadow text-center">
-            <Image src="/C1.png" alt="1pc Chicken with Rice" width={100} height={100} className="mx-auto" />
-            <h4 className="mt-2 font-semibold text-sm">1pc Chicken with Rice</h4>
-            <p className="text-orange-500 font-bold text-sm">₱99</p>
-          </div>
+          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <Image src="/C1.png" alt="1pc Chicken with Rice" width={110} height={110} className="mx-auto rounded-xl" />
+            <h4 className="mt-2 font-semibold text-gray-800 text-sm">1pc Chicken with Rice</h4>
+            <p className="text-orange-500 font-bold mt-1 text-sm">₱99</p>
+          </Link>
 
         </div>
 

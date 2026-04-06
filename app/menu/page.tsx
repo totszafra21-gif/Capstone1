@@ -53,23 +53,23 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <section className="px-20 py-10">
-        <h2 className="text-4xl font-bold mb-6 text-center">Our Menu</h2>
+      <section className="px-24 pt-28 pb-10">
+        <h2 className="text-4xl font-extrabold mb-2 text-center text-gray-800">Our Menu</h2>
+        <p className="text-center text-gray-500 mb-8">Choose from our freshly prepared meals</p>
 
         {/* Category Dropdown */}
         <div className="flex justify-center mb-8">
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:border-orange-500 text-gray-700"
+            className="border border-gray-300 px-4 py-2 rounded-full focus:outline-none focus:border-orange-500 text-gray-700 shadow-sm"
           >
             <option value="all">All</option>
             <option value="meals">Meals</option>
             <option value="wings">Wings</option>
-            <option value="drinks">Drinks</option>
             <option value="drinks">Drinks</option>
           </select>
         </div>
@@ -78,15 +78,15 @@ export default function MenuPage() {
           <p className="text-center text-green-600 font-semibold mb-4">{message}</p>
         )}
 
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-6">
           {menuItems.filter(item => category === "all" || item.category === category).map((item) => (
-            <div key={item.id} className="bg-white p-6 rounded-xl shadow text-center">
-              <Image src={item.image} alt={item.name} width={200} height={200} className="mx-auto" />
-              <h4 className="mt-4 font-semibold">{item.name}</h4>
-              <p className="text-orange-500 font-bold">₱{item.price}</p>
+            <div key={item.id} className="bg-white p-5 rounded-2xl shadow-md text-center hover:shadow-lg transition">
+              <Image src={item.image} alt={item.name} width={180} height={180} className="mx-auto rounded-xl" />
+              <h4 className="mt-4 font-semibold text-gray-800">{item.name}</h4>
+              <p className="text-orange-500 font-bold mt-1">₱{item.price}</p>
               <button
                 onClick={() => addToCart(item.id)}
-                className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 w-full"
+                className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 w-full font-semibold shadow-sm"
               >
                 Add to Cart
               </button>
@@ -95,20 +95,20 @@ export default function MenuPage() {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white mt-10">
-        <div className="max-w-7xl mx-auto px-10 py-10 grid grid-cols-3 gap-8">
+      <footer className="bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-10 py-3 grid grid-cols-3 gap-8">
           <div>
-            <h4 className="text-xl font-bold mb-3 text-orange-400">ELYAN Chicken Hub</h4>
-            <p className="text-gray-300">Serving crispy and delicious fried chicken, wings, and combo meals. Made fresh and perfect for everyone.</p>
+            <h4 className="text-base font-bold mb-1 text-orange-400">ELYAN Chicken Hub</h4>
+            <p className="text-gray-300 text-xs">Serving crispy and delicious fried chicken, wings, and combo meals. Made fresh and perfect for everyone.</p>
           </div>
           <div>
-            <h4 className="text-lg font-semibold mb-3">Contact</h4>
-            <p className="text-gray-300">📍 Philippines</p>
-            <p className="text-gray-300">📞 0912-345-6789</p>
-            <p className="text-gray-300">✉️ elyanchickenhub@gmail.com</p>
+            <h4 className="text-sm font-semibold mb-1">Contact</h4>
+            <p className="text-gray-300 text-xs">📍 Philippines</p>
+            <p className="text-gray-300 text-xs">📞 0912-345-6789</p>
+            <p className="text-gray-300 text-xs">✉️ elyanchickenhub@gmail.com</p>
           </div>
         </div>
-        <div className="text-center border-t border-gray-700 py-4 text-gray-400">
+        <div className="text-center border-t border-gray-700 py-2 text-gray-400 text-xs">
           © 2026 ELYAN Chicken Hub. All rights reserved.
         </div>
       </footer>
