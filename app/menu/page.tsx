@@ -81,7 +81,7 @@ export default function MenuPage() {
         <div className="grid grid-cols-3 gap-6">
           {menuItems.filter(item => category === "all" || item.category === category).map((item) => (
             <div key={item.id} className="bg-white p-5 rounded-2xl shadow-md text-center hover:shadow-lg transition">
-              <Image src={item.image} alt={item.name} width={180} height={180} className="mx-auto rounded-xl" />
+              <Image src={item.image} alt={item.name} width={180} height={180} className="mx-auto rounded-xl object-cover w-[180px] h-[180px]" />
               <h4 className="mt-4 font-semibold text-gray-800">{item.name}</h4>
               <p className="text-orange-500 font-bold mt-1">₱{item.price}</p>
               <button
