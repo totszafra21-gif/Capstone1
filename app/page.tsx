@@ -50,19 +50,19 @@ export default function Home() {
         <div className="flex justify-center gap-6">
 
           <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
-            <Image src="/classic.png" alt="Fried Chicken" width={110} height={110} className="mx-auto rounded-xl" />
+            <Image src="/2pc.png" alt="Fried Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Classic Fried Chicken</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱120</p>
           </Link>
 
           <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
-            <Image src="/spicy.jpg" alt="Wings" width={110} height={110} className="mx-auto rounded-xl" />
+            <Image src="/spicy.jpg" alt="Wings" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Spicy Chicken Wings</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱150</p>
           </Link>
 
           <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
-            <Image src="/C1.png" alt="1pc Chicken with Rice" width={110} height={110} className="mx-auto rounded-xl" />
+            <Image src="/pc1.png" alt="1pc Chicken with Rice" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">1pc Chicken with Rice</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱99</p>
           </Link>
