@@ -89,6 +89,7 @@ export default function AdminMenu() {
             <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="border p-2 rounded-lg focus:outline-none focus:border-orange-500">
               <option value="meals">Meals</option>
               <option value="wings">Wings</option>
+              <option value="drinks">Drinks</option>
             </select>
             <button type="submit" className="col-span-4 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600">
               {editing ? "Update Item" : "Add Item"}

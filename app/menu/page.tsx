@@ -69,6 +69,8 @@ export default function MenuPage() {
             <option value="all">All</option>
             <option value="meals">Meals</option>
             <option value="wings">Wings</option>
+            <option value="drinks">Drinks</option>
+            <option value="drinks">Drinks</option>
           </select>
         </div>
 
