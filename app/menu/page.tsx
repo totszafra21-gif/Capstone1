@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Navbar from "../components/Navbar";
@@ -60,18 +59,27 @@ export default function MenuPage() {
         <h2 className="text-4xl font-extrabold mb-2 text-center text-gray-800">Our Menu</h2>
         <p className="text-center text-gray-500 mb-8">Choose from our freshly prepared meals</p>
 
-        {/* Category Dropdown */}
-        <div className="flex justify-center mb-8">
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border border-gray-300 px-4 py-2 rounded-full focus:outline-none focus:border-orange-500 text-gray-700 shadow-sm"
-          >
-            <option value="all">All</option>
-            <option value="meals">Meals</option>
-            <option value="wings">Wings</option>
-            <option value="drinks">Drinks</option>
-          </select>
+        {/* Category Icons */}
+        <div className="flex justify-center gap-4 mb-8">
+          {[
+            { value: "all", label: "All", icon: "🍽️" },
+            { value: "meals", label: "Meals", icon: "🍗" },
+            { value: "wings", label: "Wings", icon: "🔥" },
+            { value: "drinks", label: "Drinks", icon: "🥤" },
+          ].map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => setCategory(cat.value)}
+              className={`flex flex-col items-center gap-1 px-6 py-3 rounded-xl font-semibold transition ${
+                category === cat.value
+                  ? "bg-orange-500 text-white shadow"
+                  : "bg-white text-gray-600 hover:bg-orange-100"
+              }`}
+            >
+              <span className="text-2xl">{cat.icon}</span>
+              <span className="text-sm">{cat.label}</span>
+            </button>
+          ))}
         </div>
 
         {message && (
