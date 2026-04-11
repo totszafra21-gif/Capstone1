@@ -83,7 +83,9 @@ export default function MenuPage() {
         </div>
 
         {message && (
-          <p className="text-center text-green-600 font-semibold mb-4">{message}</p>
+          <div className="fixed top-24 right-6 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-bounce">
+            🛒 {message}
+          </div>
         )}
 
         <div className="grid grid-cols-3 gap-6">

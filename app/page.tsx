@@ -4,20 +4,20 @@ import Navbar from "./components/Navbar";
 
 export default function Home() {
   return (
-    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden pt-20">
+    <div className="h-screen flex flex-col bg-gray-50 pt-20">
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-between px-24 py-5 bg-white shadow-sm">
+      <section className="flex items-center justify-between px-24 py-3 bg-white shadow-sm">
 
         <div className="max-w-lg">
-          <p className="text-orange-500 font-semibold text-sm mb-1 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
-          <h2 className="text-3xl font-extrabold mb-2 leading-tight">
+          <p className="text-orange-500 font-semibold text-sm mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
+          <h2 className="text-3xl font-extrabold mb-4 leading-tight">
             Crispy & Delicious <br />
             Fried Chicken 🍗
           </h2>
 
-          <p className="text-gray-500 mb-3 text-sm">
+          <p className="text-gray-500 mb-8 text-sm">
             Enjoy our freshly cooked fried chicken, wings, and combo meals made with love.
           </p>
 
@@ -33,15 +33,15 @@ export default function Home() {
         <Image
           src="/chickens.png"
           alt="Chicken"
-          width={220}
-          height={220}
+          width={420}
+          height={320}
           className="rounded-2xl drop-shadow-xl"
         />
 
       </section>
 
       {/* FEATURED SECTION */}
-      <section className="px-24 py-5 flex-1">
+      <section className="px-24 py-3 flex-1 mb-2">
 
         <h3 className="text-lg font-bold mb-3 text-center text-gray-800">
           🔥 Popular Meals

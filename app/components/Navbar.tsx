@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-
 import { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -29,15 +29,24 @@ export default function Navbar() {
         <Link href="/" className="hover:text-orange-500">Home</Link>
         <Link href="/menu" className="hover:text-orange-500">Menu</Link>
         {user && (
-          <>
-            <Link href="/cart" className="hover:text-orange-500">Cart</Link>
-            <Link href="/orders" className="hover:text-orange-500">My Orders</Link>
-          </>
+          <Link href="/cart" className="hover:text-orange-500">Cart</Link>
         )}
         {user ? (
-          <div className="flex items-center gap-4">
-            <Link href="/profile" className="hover:text-orange-500">Profile</Link>
-            <button onClick={handleLogout} className="text-red-500 hover:text-red-600">Logout</button>
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-1 hover:text-orange-500 font-medium"
+            >
+              Profile ▾
+            </button>
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                <Link href="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-500 text-sm">👤 Profile</Link>
+                <Link href="/orders" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-500 text-sm">📋 My Orders</Link>
+                <Link href="/contact" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-500 text-sm">✉️ Contact</Link>
+                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-red-50 text-red-500 text-sm">🚪 Logout</button>
+              </div>
+            )}
           </div>
         ) : (
           <Link href="/login" className="hover:text-orange-500">Login</Link>
