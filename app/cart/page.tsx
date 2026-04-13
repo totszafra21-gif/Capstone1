@@ -23,10 +23,26 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [shippingError, setShippingError] = useState("");
 
   useEffect(() => {
     fetchCart();
+    fetchProfile();
   }, []);
+
+  async function fetchProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase.from("profiles").select("full_name, phone, address").eq("id", user.id).single();
+    if (data) {
+      setFullName(data.full_name || "");
+      setPhone(data.phone || "");
+      setAddress(data.address || "");
+    }
+  }
 
   async function fetchCart() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -51,6 +67,11 @@ export default function Cart() {
   }
 
   async function handleCheckout() {
+    if (!fullName || !phone || !address) {
+      setShippingError("Please fill in all shipping information.");
+      return;
+    }
+    setShippingError("");
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -58,7 +79,7 @@ export default function Cart() {
 
     const { data: order } = await supabase
       .from("orders")
-      .insert({ user_id: user.id, total, status: "pending", payment_method: paymentMethod })
+      .insert({ user_id: user.id, total, status: "pending", payment_method: paymentMethod, shipping_name: fullName, shipping_phone: phone, shipping_address: address })
       .select()
       .single();
 
@@ -110,6 +131,41 @@ export default function Cart() {
               ))}
 
               <div className="mt-6 border-t pt-6">
+                <h3 className="text-lg font-semibold mb-3">🚚 Shipping Information</h3>
+                <div className="space-y-3 mb-6">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Full Name</label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Enter your phone number"
+                      className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Delivery Address</label>
+                    <textarea
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Enter your delivery address"
+                      rows={3}
+                      className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  {shippingError && <p className="text-red-500 text-sm">{shippingError}</p>}
+                </div>
+
                 <h3 className="text-lg font-semibold mb-3">Payment Method</h3>
                 <div className="flex gap-4 mb-6">
                   <label className="flex items-center gap-2 cursor-pointer">

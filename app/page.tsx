@@ -67,6 +67,12 @@ export default function Home() {
             <p className="text-orange-500 font-bold mt-1 text-sm">₱99</p>
           </Link>
 
+          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <Image src="/Lumpia.png" alt="Lumpia with Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
+            <h4 className="mt-2 font-semibold text-gray-800 text-sm">Lumpia with Chicken</h4>
+            <p className="text-orange-500 font-bold mt-1 text-sm">₱50</p>
+          </Link>
+
         </div>
 
       </section>
