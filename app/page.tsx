@@ -8,19 +8,19 @@ import Navbar from "./components/Navbar";
 const slides = [
   {
     title: "🍗 1 PC Chicken with Rice",
-    image: "/pc1.png",
+    image: "/chickens.png",
     description: "Crispy fried chicken with steamed rice",
     bg: "from-orange-50 to-orange-100",
   },
   {
     title: "🍗🍗 2 PC Chicken with Rice",
-    image: "/2pc.png",
+    image: "/chickens.png",
     description: "Double chicken, double satisfaction",
     bg: "from-yellow-50 to-yellow-100",
   },
   {
     title: "🌯 Lumpia with Rice",
-    image: "/Lumpia.png",
+    image: "/chickens.png",
     description: "Crispy Filipino spring rolls with rice",
     bg: "from-green-50 to-green-100",
   },
