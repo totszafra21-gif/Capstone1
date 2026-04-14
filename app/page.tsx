@@ -10,17 +10,17 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-center px-24 py-6 bg-white shadow-sm">
+      <section className="flex items-center justify-center px-24 py-16 bg-white shadow-sm mt-20">
         <div className="max-w-lg text-center">
-          <p className="text-orange-500 font-semibold text-sm mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
-          <h2 className="text-3xl font-extrabold mb-4 leading-tight">
+          <p className="text-orange-500 font-semibold text-lg mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
+          <h2 className="text-4xl font-extrabold mb-4 leading-tight">
             Crispy & Delicious <br />
             Fried Chicken 🍗
           </h2>
-          <p className="text-gray-500 mb-8 text-sm">
+          <p className="text-gray-500 mb-8">
             Enjoy our freshly cooked fried chicken, wings, and combo meals made with love.
           </p>
-          <Link href="/menu" className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 font-semibold shadow-md text-sm">
+          <Link href="/menu" className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 font-semibold shadow-md">
             Order Now →
           </Link>
         </div>
