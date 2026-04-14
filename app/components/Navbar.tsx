@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
@@ -24,7 +25,10 @@ export default function Navbar() {
 
   return (
     <nav className="flex justify-between items-center p-6 bg-white shadow fixed top-0 left-0 right-0 z-50">
-      <h1 className="text-2xl font-bold text-orange-500">ELYAN Chicken Hub</h1>
+      <div className="flex items-center gap-3">
+        <Image src="/chickens.png" alt="logo" width={40} height={40} className="rounded-full" />
+        <h1 className="text-2xl font-bold text-orange-500">ELYAN Chicken Hub</h1>
+      </div>
       <div className="space-x-6 flex items-center">
         <Link href="/" className="hover:text-orange-500">Home</Link>
         <Link href="/menu" className="hover:text-orange-500">Menu</Link>
