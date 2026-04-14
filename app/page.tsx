@@ -2,16 +2,32 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 
+const slides = [
+  { title: "🍗 1 PC Chicken with Rice", image: "/pc1.png", description: "Crispy fried chicken with steamed rice", bg: "from-orange-100 to-orange-200" },
+  { title: "🍗🍗 2 PC Chicken with Rice", image: "/2pc.png", description: "Double chicken, double satisfaction", bg: "from-yellow-100 to-yellow-200" },
+  { title: "🌯 Lumpia with Rice", image: "/Lumpia.png", description: "Crispy Filipino spring rolls with rice", bg: "from-green-100 to-green-200" },
+];
+
 export default function Home() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent((prev) => (prev + 1) % slides.length), 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-center px-24 py-16 bg-white shadow-sm mt-20">
-        <div className="max-w-lg text-center">
+      <section className="flex items-center justify-between px-24 py-16 bg-white shadow-sm mt-20 gap-10">
+
+        {/* LEFT - WELCOME TEXT */}
+        <div className="max-w-lg text-center flex-1">
           <p className="text-orange-500 font-semibold text-lg mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
           <h2 className="text-4xl font-extrabold mb-4 leading-tight">
             Crispy & Delicious <br />
@@ -24,6 +40,21 @@ export default function Home() {
             Order Now →
           </Link>
         </div>
+
+        {/* RIGHT - CAROUSEL */}
+        <div className={`relative flex flex-col items-center justify-center bg-gradient-to-br ${slides[current].bg} rounded-2xl p-8 w-[420px] min-h-[320px] shadow-lg transition-all duration-500`}>
+          <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">{slides[current].title}</h3>
+          <Image src={slides[current].image} alt={slides[current].title} width={200} height={200} className="rounded-xl object-cover w-[200px] h-[200px] shadow-md" />
+          <p className="mt-3 text-gray-600 text-sm text-center">{slides[current].description}</p>
+          <div className="flex gap-2 mt-4">
+            {slides.map((_, i) => (
+              <button key={i} onClick={() => setCurrent(i)} className={`w-2.5 h-2.5 rounded-full transition ${i === current ? "bg-orange-500" : "bg-gray-300"}`} />
+            ))}
+          </div>
+          <button onClick={() => setCurrent((current - 1 + slides.length) % slides.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white shadow px-2 py-1 rounded-full text-orange-500 hover:bg-orange-50">‹</button>
+          <button onClick={() => setCurrent((current + 1) % slides.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white shadow px-2 py-1 rounded-full text-orange-500 hover:bg-orange-50">›</button>
+        </div>
+
       </section>
 
       {/* FEATURED SECTION */}
