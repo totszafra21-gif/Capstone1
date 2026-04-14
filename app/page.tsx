@@ -49,25 +49,29 @@ export default function Home() {
 
         <div className="flex justify-center gap-6">
 
-          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+          <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">🔥 Best Seller</span>
             <Image src="/2pc.png" alt="Fried Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Classic Fried Chicken</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱120</p>
           </Link>
 
-          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+          <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">🌶️ Spicy</span>
             <Image src="/spicy.jpg" alt="Wings" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Spicy Chicken Wings</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱150</p>
           </Link>
 
-          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+          <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">✅ Value</span>
             <Image src="/pc1.png" alt="1pc Chicken with Rice" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">1pc Chicken with Rice</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱99</p>
           </Link>
 
-          <Link href="/menu" className="bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+          <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
+            <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">⭐ New</span>
             <Image src="/Lumpia.png" alt="Lumpia with Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Lumpia with Chicken</h4>
             <p className="text-orange-500 font-bold mt-1 text-sm">₱50</p>
