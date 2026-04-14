@@ -2,83 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 
-const slides = [
-  {
-    title: "🍗 1 PC Chicken with Rice",
-    image: "/chickens.png",
-    description: "Crispy fried chicken with steamed rice",
-    bg: "from-orange-50 to-orange-100",
-  },
-  {
-    title: "🍗🍗 2 PC Chicken with Rice",
-    image: "/chickens.png",
-    description: "Double chicken, double satisfaction",
-    bg: "from-yellow-50 to-yellow-100",
-  },
-  {
-    title: "🌯 Lumpia with Rice",
-    image: "/chickens.png",
-    description: "Crispy Filipino spring rolls with rice",
-    bg: "from-green-50 to-green-100",
-  },
-];
-
 export default function Home() {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-
-      {/* CAROUSEL */}
-      <section className="w-full mt-16">
-        <div className={`relative w-full bg-gradient-to-r ${slides[current].bg} flex flex-col items-center justify-center py-10 transition-all duration-500`} style={{ minHeight: "340px" }}>
-          <h2 className="text-2xl font-extrabold text-gray-800 mb-4">{slides[current].title}</h2>
-          <Image
-            src={slides[current].image}
-            alt={slides[current].title}
-            width={220}
-            height={220}
-            className="rounded-2xl object-cover w-[220px] h-[220px] shadow-xl"
-          />
-          <p className="mt-4 text-gray-600 font-medium">{slides[current].description}</p>
-
-          {/* Dots */}
-          <div className="flex gap-2 mt-4">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-3 h-3 rounded-full transition ${i === current ? "bg-orange-500" : "bg-gray-300"}`}
-              />
-            ))}
-          </div>
-
-          {/* Arrows */}
-          <button
-            onClick={() => setCurrent((current - 1 + slides.length) % slides.length)}
-            className="absolute left-6 top-1/2 -translate-y-1/2 bg-white shadow px-3 py-2 rounded-full text-orange-500 hover:bg-orange-50"
-          >
-            ‹
-          </button>
-          <button
-            onClick={() => setCurrent((current + 1) % slides.length)}
-            className="absolute right-6 top-1/2 -translate-y-1/2 bg-white shadow px-3 py-2 rounded-full text-orange-500 hover:bg-orange-50"
-          >
-            ›
-          </button>
-        </div>
-      </section>
 
       {/* HERO SECTION */}
       <section className="flex items-center justify-between px-24 py-6 bg-white shadow-sm">
