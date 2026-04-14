@@ -10,8 +10,8 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-between px-24 py-6 bg-white shadow-sm">
-        <div className="max-w-lg">
+      <section className="flex items-center justify-center px-24 py-6 bg-white shadow-sm">
+        <div className="max-w-lg text-center">
           <p className="text-orange-500 font-semibold text-sm mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
           <h2 className="text-3xl font-extrabold mb-4 leading-tight">
             Crispy & Delicious <br />
@@ -24,7 +24,6 @@ export default function Home() {
             Order Now →
           </Link>
         </div>
-        <Image src="/chickens.png" alt="Chicken" width={420} height={320} className="rounded-2xl drop-shadow-xl" />
       </section>
 
       {/* FEATURED SECTION */}
