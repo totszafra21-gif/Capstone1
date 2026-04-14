@@ -71,10 +71,14 @@ export default function Home() {
           </Link>
 
           <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
-            <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">⭐ New</span>
+            <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">🔥 Best Seller</span>
+            <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">10% OFF</span>
             <Image src="/Lumpia.png" alt="Lumpia with Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
             <h4 className="mt-2 font-semibold text-gray-800 text-sm">Lumpia with Chicken</h4>
-            <p className="text-orange-500 font-bold mt-1 text-sm">₱50</p>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <p className="text-gray-400 line-through text-xs">₱50</p>
+              <p className="text-orange-500 font-bold text-sm">₱45</p>
+            </div>
           </Link>
 
         </div>
