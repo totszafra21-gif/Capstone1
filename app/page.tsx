@@ -24,17 +24,17 @@ export default function Home() {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="flex items-center justify-between px-24 py-16 bg-white shadow-sm mt-20 gap-10">
+      <section className="flex items-start justify-between px-24 py-16 bg-white shadow-sm mt-20 gap-10">
 
         {/* LEFT - WELCOME TEXT */}
-        <div className="max-w-lg text-center flex-1">
-          <p className="text-orange-500 font-semibold text-lg mb-3 uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
-          <h2 className="text-4xl font-extrabold mb-4 leading-tight">
-            Crispy & Delicious <br />
-            Fried Chicken 🍗
+        <div className="max-w-lg text-center flex-1 space-y-4">
+          <p className="text-orange-500 font-semibold text-lg uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
+          <h2 className="text-4xl font-extrabold leading-tight">
+            Crispy & Delicious<br />
+            <span className="inline-block pl-6">Fried Chicken 🍗</span>
           </h2>
-          <p className="text-gray-500 mb-8">
-            Enjoy our freshly cooked fried chicken, wings, and combo meals made with love.
+          <p className="text-gray-500 mb-8 leading-relaxed">
+            is your go-to spot for crispy and juicy fried chicken and tasty wings. We prepare every dish fresh to give you the best flavor in every bite—perfect for students, families, and chicken lovers.
           </p>
           <Link href="/menu" className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 font-semibold shadow-md">
             Order Now →
@@ -42,9 +42,9 @@ export default function Home() {
         </div>
 
         {/* RIGHT - CAROUSEL */}
-        <div className={`relative flex flex-col items-center justify-center bg-gradient-to-br ${slides[current].bg} rounded-2xl p-8 w-[420px] min-h-[320px] shadow-lg transition-all duration-500`}>
+        <div className="relative flex flex-col items-center justify-center bg-white rounded-2xl p-8 w-[420px] min-h-[320px] shadow-lg transition-all duration-500">
           <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">{slides[current].title}</h3>
-          <Image src={slides[current].image} alt={slides[current].title} width={200} height={200} className="rounded-xl object-cover w-[200px] h-[200px] shadow-md" />
+          <Image src={slides[current].image} alt={slides[current].title} width={320} height={320} className="rounded-xl object-cover w-[320px] h-[320px]" />
           <p className="mt-3 text-gray-600 text-sm text-center">{slides[current].description}</p>
           <div className="flex gap-2 mt-4">
             {slides.map((_, i) => (
@@ -57,10 +57,44 @@ export default function Home() {
 
       </section>
 
+      {/* FEATURED MEAL SECTION */}
+      <section className="px-24 py-10">
+        <div className="max-w-5xl mx-auto rounded-[2rem] bg-white p-8 shadow-lg border border-orange-100 min-h-[400px]">
+          <div className="flex flex-wrap items-center gap-12 h-full">
+            <Image src="/pc1.png" alt="1pc Chicken with Rice" width={360} height={360} className="rounded-[2rem] object-cover w-[360px] h-[360px]" />
+            <div className="flex-1 min-w-[340px] pl-10 sm:pl-20 lg:pl-24 flex flex-col justify-between">
+              <div>
+                <span className="bg-orange-100 text-orange-500 text-sm font-semibold px-4 py-2 rounded-full uppercase tracking-widest">Featured Meal</span>
+                <h3 className="text-4xl font-extrabold text-gray-900 mt-4 mb-4">1 PC Chicken with Rice</h3>
+                <p className="max-w-xl text-gray-600 text-base leading-relaxed">Golden crispy fried chicken paired with warm steamed rice — the perfect everyday meal that's filling, flavorful, and made fresh just for you. A classic comfort food at an unbeatable price!</p>
+              </div>
+              <Link href="/menu" className="inline-block mt-6 bg-orange-500 text-white px-8 py-4 rounded-full text-base font-semibold hover:bg-orange-600 shadow-lg">Order Now →</Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-lg border border-orange-100 min-h-[400px]">
+          <div className="flex flex-wrap items-center gap-12 max-w-5xl mx-auto h-full">
+            <div className="flex-1 min-w-[280px] pr-6 sm:pr-12 lg:pr-16 flex flex-col justify-between">
+              <div>
+                <span className="bg-orange-100 text-orange-500 text-sm font-semibold px-4 py-2 rounded-full uppercase tracking-widest">Featured Meal</span>
+                <h4 className="text-3xl font-extrabold text-gray-900 mt-4 mb-4">Lumpia with Chicken</h4>
+                <p className="max-w-xl text-gray-600 text-base leading-relaxed">A tasty match for your 1 PC Chicken with Rice — crispy lumpia rolls filled with savory chicken and veggies, served hot and ready to enjoy.</p>
+              </div>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <p className="text-xl font-bold text-orange-600">₱45</p>
+                <Link href="/menu" className="inline-flex items-center justify-center rounded-full bg-orange-500 px-8 py-3 text-sm font-semibold text-white hover:bg-orange-600 shadow-lg">Add to order</Link>
+              </div>
+            </div>
+            <Image src="/lumpia with Chicken.png" alt="Lumpia with Chicken" width={360} height={360} className="rounded-[2rem] object-cover w-[360px] h-[360px]" />
+          </div>
+        </div>
+      </section>
+
       {/* FEATURED SECTION */}
-      <section className="px-24 py-6">
-        <h3 className="text-lg font-bold mb-4 text-center text-gray-800">🔥 Popular Meals</h3>
-        <div className="flex justify-center gap-6">
+      <section className="px-24 py-10">
+        <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">🔥 Popular Meals</h3>
+        <div className="flex flex-wrap justify-center gap-8">
 
           <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
             <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">🔥 Best Seller</span>
