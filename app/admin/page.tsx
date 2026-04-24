@@ -112,7 +112,7 @@ function getLast7DaysUsage(orders: OrderRecord[]): UsagePoint[] {
   const lookup = new Map(days.map((day) => [day.day, day]));
 
   orders
-    .filter((order) => ["preparing", "ready", "delivered"].includes(order.status))
+    .filter((order) => order.status !== "cancelled")
     .forEach((order) => {
       const orderDate = new Date(order.created_at);
       orderDate.setHours(0, 0, 0, 0);
@@ -408,7 +408,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-500">Ingredient Usage</p>
               <h3 className="text-2xl font-bold text-gray-900">Chicken kilos and lumpia packs per day</h3>
             </div>
-            <p className="text-sm text-gray-500">Based on orders marked preparing, ready, or delivered in the last 7 days</p>
+            <p className="text-sm text-gray-500">Based on all non-cancelled orders from the last 7 days</p>
           </div>
 
           <div className="grid gap-4 mb-6 md:grid-cols-3">
