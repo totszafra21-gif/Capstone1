@@ -26,10 +26,9 @@ export default function Home() {
       {/* HERO SECTION */}
       <section className="flex items-start justify-between px-24 py-16 bg-white shadow-sm mt-20 gap-10">
 
-        {/* LEFT - WELCOME TEXT */}
+        {/* LEFT - HERO TEXT */}
         <div className="max-w-lg text-center flex-1 space-y-4">
-          <p className="text-orange-500 font-semibold text-lg uppercase tracking-widest">Welcome to ELYAN Chicken Hub</p>
-          <h2 className="text-4xl font-extrabold leading-tight">
+          <h2 className="text-6xl font-extrabold leading-tight sm:text-7xl">
             Crispy & Delicious<br />
             <span className="inline-block pl-6">Fried Chicken 🍗</span>
           </h2>
