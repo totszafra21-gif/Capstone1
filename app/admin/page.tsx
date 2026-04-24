@@ -21,7 +21,7 @@ type OrderRecord = {
     quantity: number;
     menu_items?: {
       name: string;
-    } | null;
+    }[] | null;
   }[];
 };
 
@@ -121,7 +121,7 @@ function getLast7DaysUsage(orders: OrderRecord[]): UsagePoint[] {
       if (!bucket) return;
 
       order.order_items?.forEach((item) => {
-        const itemName = item.menu_items?.name || "";
+        const itemName = item.menu_items?.[0]?.name || "";
         const itemQuantity = Number(item.quantity) || 0;
 
         bucket.chickenKg += estimateChickenKgFromItem(itemName, itemQuantity);
