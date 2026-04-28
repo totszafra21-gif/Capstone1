@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isValidOTPFormat } from "@/lib/otp";
 import { validateEmailSecurity, sanitizeEmailInput } from "@/lib/emailSecurity";
 
-export default function VerifyOtpPage() {
+function VerifyOtpInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -154,3 +154,10 @@ export default function VerifyOtpPage() {
   );
 }
 
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <VerifyOtpInner />
+    </Suspense>
+  );
+}
