@@ -4,22 +4,43 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/authSession";
 
 type Profile = { id: string; full_name: string; email: string; phone: string; address: string; is_admin: boolean; created_at: string };
 
 export default function AdminUsers() {
   const router = useRouter();
   const [users, setUsers] = useState<Profile[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function checkAdminAndFetch() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
-      const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-      if (!profile?.is_admin) { router.push("/"); return; }
+      setError("");
+      try {
+        const user = await getAuthenticatedUser();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single();
+        if (profileError) {
+          setError("Failed to verify admin access. Please try again.");
+          return;
+        }
+        if (!profile?.is_admin) {
+          router.push("/");
+          return;
+        }
 
-      const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
-      if (data) setUsers(data);
+        const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+        if (data) setUsers(data);
+      } catch {
+        setError("Network error. Please check your connection then refresh.");
+      }
     }
     checkAdminAndFetch();
   }, []);
@@ -55,6 +76,11 @@ export default function AdminUsers() {
 
       <main className="flex-1 p-10">
         <h2 className="text-3xl font-bold mb-8">Users</h2>
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
         <div className="bg-white rounded-xl shadow overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">

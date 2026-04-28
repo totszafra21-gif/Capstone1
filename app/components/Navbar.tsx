@@ -5,21 +5,49 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
+import { validateSession, handleAuthError, signOut } from "@/lib/authSession";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    async function checkAuth() {
+      try {
+        const session = await validateSession();
+        setUser(session?.user ?? null);
+      } catch (error) {
+        // Suppress refresh token errors - user will be logged out anyway
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        if (!errorMsg.includes("Invalid Refresh Token") && 
+            !errorMsg.includes("Refresh Token Not Found") &&
+            !errorMsg.includes("invalid_token")) {
+          console.error("Auth error:", error);
+        }
+        const { shouldLogout } = handleAuthError(error);
+        if (shouldLogout) {
+          await signOut();
+        }
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    checkAuth();
+    
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
     });
-    return () => listener.subscription.unsubscribe();
+    
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    await signOut();
     window.location.href = "/";
   }
 

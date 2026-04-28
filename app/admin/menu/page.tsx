@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/authSession";
 
 type MenuItem = { id: string; name: string; price: number; image: string; category: string };
 
@@ -14,14 +15,34 @@ export default function AdminMenu() {
   const [form, setForm] = useState({ name: "", price: "", image: "", category: "meals" });
   const [editing, setEditing] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function checkAdminAndFetch() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
-      const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-      if (!profile?.is_admin) { router.push("/"); return; }
-      fetchItems();
+      setError("");
+      try {
+        const user = await getAuthenticatedUser();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single();
+        if (profileError) {
+          setError("Failed to verify admin access. Please try again.");
+          return;
+        }
+        if (!profile?.is_admin) {
+          router.push("/");
+          return;
+        }
+        fetchItems();
+      } catch {
+        setError("Network error. Please check your connection then refresh.");
+      }
     }
     checkAdminAndFetch();
   }, []);
@@ -77,6 +98,11 @@ export default function AdminMenu() {
 
       <main className="flex-1 p-10">
         <h2 className="text-3xl font-bold mb-8">Menu Items</h2>
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <div className="bg-white p-6 rounded-xl shadow mb-8">

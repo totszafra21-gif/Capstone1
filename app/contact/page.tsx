@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Navbar from "../components/Navbar";
+import { validateEmailSecurity, sanitizeEmailInput } from "@/lib/emailSecurity";
 
 export default function ContactPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -24,7 +26,20 @@ export default function ContactPage() {
     setLoading(true);
     setStatus("");
 
-    const { error } = await supabase.from("contacts").insert({ name, email, message });
+    // Validate email security
+    const emailValidation = validateEmailSecurity(email);
+    if (!emailValidation.isValid) {
+      setStatus(emailValidation.errors.join(". "));
+      setLoading(false);
+      return;
+    }
+
+    // Sanitize inputs
+    const sanitizedName = sanitizeEmailInput(name).replace(/[<>]/g, "");
+    const sanitizedEmail = sanitizeEmailInput(email);
+    const sanitizedMessage = sanitizeEmailInput(message).replace(/[<>]/g, "");
+
+    const { error } = await supabase.from("contacts").insert({ name: sanitizedName, email: sanitizedEmail, message: sanitizedMessage });
 
     if (error) {
       setStatus("Failed to send message. Please try again.");
@@ -33,6 +48,7 @@ export default function ContactPage() {
       setName("");
       setEmail("");
       setMessage("");
+      setEmailFocused(false);
     }
     setLoading(false);
   }
@@ -63,10 +79,23 @@ export default function ContactPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setEmailFocused(true)}
                 placeholder="Enter your email"
                 className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
                 required
               />
+              {emailFocused && email && (
+                <div className="mt-1 text-xs">
+                  {(() => {
+                    const validation = validateEmailSecurity(email);
+                    return validation.isValid ? (
+                      <span className="text-green-600">✓ Valid email format</span>
+                    ) : (
+                      <span className="text-red-500">{validation.errors[0]}</span>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
             <div>
               <label className="text-sm font-medium text-gray-600">Message</label>

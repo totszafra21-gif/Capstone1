@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { validateEmailSecurity, getPasswordStrength, getPasswordStrengthLabel, getPasswordStrengthColor } from "@/lib/emailSecurity";
 
 export default function Register() {
   const router = useRouter();
@@ -17,10 +18,19 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
+    // Validate email security
+    const emailValidation = validateEmailSecurity(email);
+    if (!emailValidation.isValid) {
+      setError(emailValidation.errors.join(". "));
+      return;
+    }
 
     if (password !== confirm) {
       setError("Passwords do not match.");
@@ -32,11 +42,23 @@ export default function Register() {
       return;
     }
 
+    // Check password strength
+    const passwordStrength = getPasswordStrength(password);
+    if (passwordStrength < 2) {
+      setError("Password is too weak. Use at least 8 characters with letters, numbers, and symbols.");
+      return;
+    }
+
     setLoading(true);
+
+    // Use Supabase's built-in email confirmation (works with configured SMTP)
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: { 
+        data: { full_name: name },
+        emailRedirectTo: `${window.location.origin}/login`
+      },
     });
 
     console.log("signUp data:", data);
@@ -45,16 +67,28 @@ export default function Register() {
     if (error) {
       setError(error.message);
     } else if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: data.user.id,
-        full_name: name,
-        email: email,
-        phone: phone,
-        address: address,
-      });
-      console.log("profileError:", profileError);
-      setSuccess("Account created! Redirecting to login...");
-      setTimeout(() => router.push("/login"), 2000);
+      // Check if email confirmation is required
+      if (!data.session) {
+        // Email confirmation required - user needs to verify email
+        setSuccess("✅ Verification email sent! Please check your inbox and click the confirmation link to activate your account.");
+        // Clear form
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirm("");
+      } else {
+        // Auto-confirmed (no email confirmation needed)
+        const sanitizedEmail = validateEmailSecurity(email).sanitized;
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          full_name: name,
+          email: sanitizedEmail,
+          phone: phone,
+          address: address,
+        });
+        setSuccess("Account created! Redirecting to login...");
+        setTimeout(() => router.push("/login"), 2000);
+      }
     } else {
       setError("Registration failed. Please try again.");
     }
@@ -92,9 +126,22 @@ export default function Register() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setEmailFocused(true)}
               className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
               required
             />
+            {emailFocused && email && (
+              <div className="mt-1 text-xs">
+                {(() => {
+                  const validation = validateEmailSecurity(email);
+                  return validation.isValid ? (
+                    <span className="text-green-600">✓ Valid email format</span>
+                  ) : (
+                    <span className="text-red-500">{validation.errors[0]}</span>
+                  );
+                })()}
+              </div>
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-gray-600">Phone Number</label>
@@ -128,6 +175,27 @@ export default function Register() {
               className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
               required
             />
+            {password && (
+              <div className="mt-1 flex items-center gap-2">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((level) => (
+                    <div
+                      key={level}
+                      className={`h-1 w-6 rounded ${getPasswordStrength(password) >= level
+                        ? getPasswordStrength(password) <= 1 ? "bg-red-500"
+                          : getPasswordStrength(password) === 2 ? "bg-yellow-500"
+                          : getPasswordStrength(password) === 3 ? "bg-blue-500"
+                          : "bg-green-500"
+                        : "bg-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className={`text-xs ${getPasswordStrengthColor(getPasswordStrength(password))}`}>
+                  {getPasswordStrengthLabel(getPasswordStrength(password))}
+                </span>
+              </div>
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-gray-600">Confirm Password</label>

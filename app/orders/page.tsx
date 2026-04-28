@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import Navbar from "../components/Navbar";
+import { getAuthToken } from "@/lib/authSession";
 
 type OrderItem = {
   quantity: number;
@@ -18,6 +19,8 @@ type Order = {
   status: string;
   payment_method: string;
   created_at: string;
+  delivered_confirmed?: boolean;
+  delivered_confirmed_at?: string | null;
   order_items: OrderItem[];
 };
 
@@ -25,6 +28,8 @@ export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     async function fetchOrders() {
@@ -42,6 +47,44 @@ export default function OrdersPage() {
     }
     fetchOrders();
   }, []);
+
+  async function confirmDelivered(orderId: string) {
+    setMessage("");
+    setConfirmingId(orderId);
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const resp = await fetch("/api/orders/confirm-delivered", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderId }),
+      });
+
+      const payload = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        setMessage(payload?.error || "Failed to confirm delivery.");
+        return;
+      }
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId ? { ...o, delivered_confirmed: true, delivered_confirmed_at: new Date().toISOString() } : o
+        )
+      );
+      setMessage(payload?.message || "Thanks! Delivery confirmed.");
+    } catch {
+      setMessage("Failed to confirm delivery.");
+    } finally {
+      setConfirmingId(null);
+    }
+  }
 
   function getStatusColor(status: string) {
     switch (status) {
@@ -61,6 +104,12 @@ export default function OrdersPage() {
       <Navbar />
       <div className="px-20 py-10">
         <h1 className="text-3xl font-bold mb-8 text-orange-500">My Orders 📋</h1>
+
+        {message && (
+          <div className="mb-6 bg-white rounded-xl shadow p-4 text-sm text-center">
+            <span className={message.toLowerCase().includes("failed") ? "text-red-600" : "text-green-700"}>{message}</span>
+          </div>
+        )}
 
         {orders.length === 0 ? (
           <div className="bg-white p-10 rounded-xl shadow text-center text-gray-500">
@@ -101,6 +150,24 @@ export default function OrdersPage() {
                 <div className="border-t mt-4 pt-4 flex justify-end">
                   <p className="text-lg font-bold">Total: <span className="text-orange-500">₱{order.total}</span></p>
                 </div>
+
+                {order.status === "delivered" && !order.delivered_confirmed && (
+                  <div className="border-t mt-4 pt-4 flex justify-end">
+                    <button
+                      onClick={() => confirmDelivered(order.id)}
+                      disabled={confirmingId === order.id}
+                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+                    >
+                      {confirmingId === order.id ? "Confirming..." : "Confirm Delivered"}
+                    </button>
+                  </div>
+                )}
+
+                {order.status === "delivered" && order.delivered_confirmed && (
+                  <div className="border-t mt-4 pt-4 flex justify-end">
+                    <p className="text-sm text-green-700 font-semibold">Delivered confirmed ✅</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>

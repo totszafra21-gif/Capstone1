@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/authSession";
 
 type Order = {
   id: string;
@@ -11,31 +12,60 @@ type Order = {
   status: string;
   payment_method: string;
   created_at: string;
+  shipping_name?: string;
+  shipping_phone?: string;
+  shipping_address?: string;
   profiles: { full_name: string; email: string };
 };
 
 export default function AdminOrders() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function checkAdminAndFetch() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
-      const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-      if (!profile?.is_admin) { router.push("/"); return; }
+      setError("");
+      try {
+        const user = await getAuthenticatedUser();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
 
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (data) {
-        const ordersWithProfiles = await Promise.all(data.map(async (order) => {
-          const { data: profile } = await supabase.from("profiles").select("full_name, email").eq("id", order.user_id).single();
-          return { ...order, profiles: profile };
-        }));
-        setOrders(ordersWithProfiles as unknown as Order[]);
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) {
+          setError("Failed to verify admin access. Please try again.");
+          return;
+        }
+
+        if (!profile?.is_admin) {
+          router.push("/");
+          return;
+        }
+
+        const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
+
+        if (data) {
+          const ordersWithProfiles = await Promise.all(
+            data.map(async (order) => {
+              const { data: profile } = await supabase
+                .from("profiles")
+                .select("full_name, email")
+                .eq("id", order.user_id)
+                .single();
+              return { ...order, profiles: profile };
+            })
+          );
+          setOrders(ordersWithProfiles as unknown as Order[]);
+        }
+      } catch {
+        setError("Network error. Please check your connection then refresh.");
       }
     }
     checkAdminAndFetch();
@@ -43,7 +73,8 @@ export default function AdminOrders() {
 
   async function updateStatus(id: string, status: string) {
     await supabase.from("orders").update({ status }).eq("id", id);
-    setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
+    const updatedOrders = orders.map(o => o.id === id ? { ...o, status } : o);
+    setOrders(updatedOrders);
   }
 
   async function handleLogout() {
@@ -66,6 +97,11 @@ export default function AdminOrders() {
 
       <main className="flex-1 p-10">
         <h2 className="text-3xl font-bold mb-8">Orders</h2>
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
         <div className="bg-white rounded-xl shadow overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
