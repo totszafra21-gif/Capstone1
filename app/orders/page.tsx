@@ -52,7 +52,7 @@ export default function OrdersPage() {
     setMessage("");
     setConfirmingId(orderId);
     try {
-      const token = getAuthToken();
+      const token = await getAuthToken();
       if (!token) {
         router.push("/login");
         return;

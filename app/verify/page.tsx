@@ -12,7 +12,7 @@ function VerifyOtpInner() {
   const searchParams = useSearchParams();
 
   const emailParam = searchParams.get("email") || "";
-  const nextParam = searchParams.get("next") || "/";
+  const nextParam = searchParams.get("next") || "/menu";
 
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");

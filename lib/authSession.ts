@@ -11,6 +11,10 @@ import { User, Session } from "@supabase/supabase-js";
  */
 export async function validateSession(): Promise<Session | null> {
   try {
+    // Supabase session storage exists only in the browser. On the server there is
+    // no localStorage/cookie-backed session unless you wire it explicitly.
+    if (typeof window === "undefined") return null;
+
     const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
@@ -20,17 +24,11 @@ export async function validateSession(): Promise<Session | null> {
     if (session) {
       return session;
     }
-    
-    // Try to refresh the session
-    const { data, error: refreshError } = await supabase.auth.refreshSession();
-    
-    if (refreshError || !data.session) {
-      // No valid refresh token - user needs to re-login
-      return null;
-    }
-    
-    return data.session;
-  } catch (error) {
+
+    // If there's no session in storage, do not call refreshSession().
+    // Calling refresh without a refresh token triggers `Invalid Refresh Token`.
+    return null;
+  } catch {
     // Suppress auth errors - they're handled gracefully
     return null;
   }
@@ -115,16 +113,10 @@ export function isAuthenticated(): boolean {
 /**
  * Get auth token from storage
  */
-export function getAuthToken(): string | null {
+export async function getAuthToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
-  
-  const sessionData = localStorage.getItem("sb-vaxszpsdzbdmzzfixfzk-auth-token");
-  if (!sessionData) return null;
-  
-  try {
-    const parsed = JSON.parse(sessionData);
-    return parsed?.access_token ?? null;
-  } catch {
-    return null;
-  }
+
+  const { data, error } = await supabase.auth.getSession();
+  if (error) return null;
+  return data.session?.access_token ?? null;
 }

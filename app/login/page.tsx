@@ -44,7 +44,7 @@ export default function Login() {
         .eq("id", data.session.user.id)
         .single();
 
-      const nextPath = profile?.is_admin ? "/admin" : "/";
+      const nextPath = profile?.is_admin ? "/admin" : "/menu";
 
       try {
         const resp = await fetch("/api/otp", {
@@ -136,7 +136,7 @@ export default function Login() {
         </div>
 
         <div className="text-center mt-4 text-sm text-gray-500">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-orange-500 font-semibold">Register</Link>
         </div>
       </div>
