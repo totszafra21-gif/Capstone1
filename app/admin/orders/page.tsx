@@ -22,6 +22,7 @@ export default function AdminOrders() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
     async function checkAdminAndFetch() {
@@ -72,9 +73,51 @@ export default function AdminOrders() {
   }, []);
 
   async function updateStatus(id: string, status: string) {
-    await supabase.from("orders").update({ status }).eq("id", id);
-    const updatedOrders = orders.map(o => o.id === id ? { ...o, status } : o);
+    setError("");
+    setStatusMessage("");
+
+    const order = orders.find((item) => item.id === id);
+    if (!order) {
+      setError("Order not found.");
+      return;
+    }
+
+    const { error: updateError } = await supabase.from("orders").update({ status }).eq("id", id);
+
+    if (updateError) {
+      setError("Failed to update order status.");
+      return;
+    }
+
+    const updatedOrders = orders.map((item) => (item.id === id ? { ...item, status } : item));
     setOrders(updatedOrders);
+
+    if ((status === "preparing" || status === "ready") && order.profiles?.email) {
+      const emailType = status === "preparing" ? "order_preparing" : "order_ready";
+      const response = await fetch("/api/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: emailType,
+          email: order.profiles.email,
+          data: {
+            orderId: order.id,
+            total: order.total,
+            address: order.shipping_address,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        setError(`Order status updated, but the ${status} email could not be sent.`);
+        return;
+      }
+
+      setStatusMessage(`Order updated and ${status} email sent.`);
+      return;
+    }
+
+    setStatusMessage("Order status updated.");
   }
 
   async function handleLogout() {
@@ -91,6 +134,7 @@ export default function AdminOrders() {
           <Link href="/admin/orders" className="bg-orange-500 px-4 py-2 rounded-lg">Orders</Link>
           <Link href="/admin/menu" className="hover:bg-gray-700 px-4 py-2 rounded-lg">Menu Items</Link>
           <Link href="/admin/users" className="hover:bg-gray-700 px-4 py-2 rounded-lg">Users</Link>
+          <Link href="/admin/contacts" className="hover:bg-gray-700 px-4 py-2 rounded-lg">Contacts</Link>
         </nav>
         <button onClick={handleLogout} className="text-red-400 hover:text-red-300 text-left px-4 py-2">Logout</button>
       </aside>
@@ -100,6 +144,11 @@ export default function AdminOrders() {
         {error && (
           <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
             {error}
+          </div>
+        )}
+        {statusMessage && (
+          <div className="mb-6 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
+            {statusMessage}
           </div>
         )}
         <div className="bg-white rounded-xl shadow overflow-hidden">

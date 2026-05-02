@@ -3,6 +3,10 @@ import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
+function getAdminEmail() {
+  return process.env.ADMIN_CONTACT_EMAIL || process.env.MAIL_FROM || "elyanchickenhub@gmail.com";
+}
+
 /**
  * Send email using Resend API
  * Works with confirmation emails, OTPs, notifications
@@ -70,6 +74,36 @@ export async function POST(req: Request) {
         `;
         break;
 
+      case "order_preparing":
+        subject = `Order Preparing #${data.orderId} - ELYAN Chicken Hub`;
+        html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #f97316;">ELYAN Chicken Hub</h1>
+            <h2>Your order is being prepared</h2>
+            <p>Good news! We are now preparing your order.</p>
+            <p><strong>Order:</strong> #${data.orderId}</p>
+            ${data.total ? `<p><strong>Total:</strong> ₱${data.total}</p>` : ""}
+            ${data.address ? `<p><strong>Delivery Address:</strong> ${data.address}</p>` : ""}
+            <p>We will send another update when your order is ready.</p>
+          </div>
+        `;
+        break;
+
+      case "order_ready":
+        subject = `Order Ready #${data.orderId} - ELYAN Chicken Hub`;
+        html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #f97316;">ELYAN Chicken Hub</h1>
+            <h2>Your order is ready</h2>
+            <p>Your order is now ready.</p>
+            <p><strong>Order:</strong> #${data.orderId}</p>
+            ${data.total ? `<p><strong>Total:</strong> ₱${data.total}</p>` : ""}
+            ${data.address ? `<p><strong>Delivery Address:</strong> ${data.address}</p>` : ""}
+            <p>Please watch for delivery or get ready for pickup.</p>
+          </div>
+        `;
+        break;
+
       case "password_reset":
         subject = "Reset your password - ELYAN Chicken Hub";
         html = `
@@ -104,6 +138,43 @@ export async function POST(req: Request) {
         `;
         break;
 
+      case "contact_admin_notification":
+        subject = `New Contact Message from ${data.name} - ELYAN Chicken Hub`;
+        html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #f97316;">ELYAN Chicken Hub</h1>
+            <h2>New contact message</h2>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.senderEmail}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+              ${data.message}
+            </div>
+          </div>
+        `;
+        break;
+
+      case "contact_reply":
+        subject = `Reply from ELYAN Chicken Hub`;
+        html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #f97316;">ELYAN Chicken Hub</h1>
+            <h2>Hello${data.name ? `, ${data.name}` : ""}!</h2>
+            <p>Our admin replied to your message.</p>
+            <p><strong>Reply:</strong></p>
+            <div style="background: #fff7ed; padding: 16px; border-radius: 8px; border: 1px solid #fed7aa;">
+              ${data.reply}
+            </div>
+            ${data.originalMessage ? `
+              <p style="margin-top: 20px;"><strong>Your message:</strong></p>
+              <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                ${data.originalMessage}
+              </div>
+            ` : ""}
+          </div>
+        `;
+        break;
+
       default:
         subject = data.subject || "ELYAN Chicken Hub";
         html = data.html || "<p>Message from ELYAN Chicken Hub</p>";
@@ -111,7 +182,7 @@ export async function POST(req: Request) {
 
     const result = await resend.emails.send({
       from: "ELYAN Chicken Hub <onboarding@resend.dev>",
-      to: email,
+      to: type === "contact_admin_notification" ? getAdminEmail() : email,
       subject,
       html,
     });

@@ -44,6 +44,20 @@ export default function ContactPage() {
     if (error) {
       setStatus("Failed to send message. Please try again.");
     } else {
+      await fetch("/api/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact_admin_notification",
+          email: sanitizedEmail,
+          data: {
+            name: sanitizedName,
+            senderEmail: sanitizedEmail,
+            message: sanitizedMessage,
+          },
+        }),
+      });
+
       setStatus("Message sent successfully! We'll get back to you soon.");
       setName("");
       setEmail("");
