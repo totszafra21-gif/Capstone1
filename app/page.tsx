@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 const slides = [
   { title: "🍗 1 PC Chicken with Rice", image: "/pc1.png", description: "Crispy fried chicken with steamed rice", bg: "from-orange-100 to-orange-200" },
   { title: "🍗🍗 2 PC Chicken with Rice", image: "/2pc.png", description: "Double chicken, double satisfaction", bg: "from-yellow-100 to-yellow-200" },
-  { title: "🌯 Lumpia with Rice", image: "/Lumpia.png", description: "Crispy Filipino spring rolls with rice", bg: "from-green-100 to-green-200" },
+  { title: "🍗 Chicken with Lumpia", image: "/lumpia-with-chicken.png", description: "Crispy fried chicken paired with hot, crunchy lumpia", bg: "from-green-100 to-green-200" },
 ];
 
 export default function Home() {
@@ -77,15 +77,15 @@ export default function Home() {
             <div className="flex-1 min-w-[280px] pr-6 sm:pr-12 lg:pr-16 flex flex-col justify-between">
               <div>
                 <span className="bg-orange-100 text-orange-500 text-sm font-semibold px-4 py-2 rounded-full uppercase tracking-widest">Featured Meal</span>
-                <h4 className="text-3xl font-extrabold text-gray-900 mt-4 mb-4">Lumpia with Chicken</h4>
-                <p className="max-w-xl text-gray-600 text-base leading-relaxed">A tasty match for your 1 PC Chicken with Rice — crispy lumpia rolls filled with savory chicken and veggies, served hot and ready to enjoy.</p>
+                <h4 className="text-3xl font-extrabold text-gray-900 mt-4 mb-4">Chicken with Lumpia</h4>
+                <p className="max-w-xl text-gray-600 text-base leading-relaxed">Crispy fried chicken paired with hot, crunchy lumpia, making a simple and satisfying meal that's fresh, flavorful, and easy to enjoy anytime.</p>
               </div>
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <p className="text-xl font-bold text-orange-600">₱45</p>
                 <Link href="/menu" className="inline-flex items-center justify-center rounded-full bg-orange-500 px-8 py-3 text-sm font-semibold text-white hover:bg-orange-600 shadow-lg">Add to order</Link>
               </div>
             </div>
-            <Image src="/lumpia with Chicken.png" alt="Lumpia with Chicken" width={360} height={360} className="rounded-[2rem] object-cover w-[360px] h-[360px]" />
+            <Image src="/lumpia-with-chicken.png" alt="Chicken with Lumpia" width={360} height={360} className="rounded-[2rem] object-cover w-[360px] h-[360px]" />
           </div>
         </div>
       </section>
@@ -118,12 +118,10 @@ export default function Home() {
 
           <Link href="/menu" className="relative bg-white p-3 rounded-2xl shadow-md text-center w-52 hover:shadow-lg transition">
             <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">🔥 Best Seller</span>
-            <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">10% OFF</span>
-            <Image src="/Lumpia.png" alt="Lumpia with Chicken" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
-            <h4 className="mt-2 font-semibold text-gray-800 text-sm">Lumpia with Chicken</h4>
+            <Image src="/lumpia-with-chicken.png" alt="Chicken with Lumpia" width={110} height={110} className="mx-auto rounded-xl object-cover w-[110px] h-[110px]" />
+            <h4 className="mt-2 font-semibold text-gray-800 text-sm">Chicken with Lumpia</h4>
             <div className="flex items-center justify-center gap-2 mt-1">
-              <p className="text-gray-400 line-through text-xs">₱50</p>
-              <p className="text-orange-500 font-bold text-sm">₱45</p>
+              <p className="text-orange-500 font-bold text-sm">₱125</p>
             </div>
           </Link>
 

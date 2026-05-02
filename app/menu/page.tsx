@@ -13,6 +13,18 @@ type MenuItem = {
   category: string;
 };
 
+function normalizeMenuItem(item: MenuItem): MenuItem {
+  if (item.name.toLowerCase() === "lumpia with rice") {
+    return {
+      ...item,
+      name: "Chicken with Lumpia",
+      image: "/lumpia-with-chicken.png",
+    };
+  }
+
+  return item;
+}
+
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [message, setMessage] = useState("");
@@ -89,11 +101,14 @@ export default function MenuPage() {
         )}
 
         <div className="grid grid-cols-3 gap-6">
-          {menuItems.filter(item => category === "all" || item.category === category).map((item) => (
+          {menuItems.filter(item => category === "all" || item.category === category).map((item) => {
+            const normalizedItem = normalizeMenuItem(item);
+
+            return (
             <div key={item.id} className="bg-white p-5 rounded-2xl shadow-md text-center hover:shadow-lg transition">
-              <Image src={item.image} alt={item.name} width={180} height={180} className="mx-auto rounded-xl object-cover w-[180px] h-[180px]" />
-              <h4 className="mt-4 font-semibold text-gray-800">{item.name}</h4>
-              <p className="text-orange-500 font-bold mt-1">₱{item.price}</p>
+              <Image src={normalizedItem.image} alt={normalizedItem.name} width={180} height={180} className="mx-auto rounded-xl object-cover w-[180px] h-[180px]" />
+              <h4 className="mt-4 font-semibold text-gray-800">{normalizedItem.name}</h4>
+              <p className="text-orange-500 font-bold mt-1">₱{normalizedItem.price}</p>
               <button
                 onClick={() => addToCart(item.id)}
                 className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 w-full font-semibold shadow-sm"
@@ -101,7 +116,8 @@ export default function MenuPage() {
                 Add to Cart
               </button>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

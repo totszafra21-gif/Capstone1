@@ -60,6 +60,7 @@ export default function Navbar() {
       <div className="space-x-6 flex items-center">
         <Link href="/" className="hover:text-orange-500">Home</Link>
         <Link href="/menu" className="hover:text-orange-500">Menu</Link>
+        <Link href="/about" className="hover:text-orange-500">About</Link>
         {user && (
           <Link href="/cart" className="hover:text-orange-500">Cart</Link>
         )}
