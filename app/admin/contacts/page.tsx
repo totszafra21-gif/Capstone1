@@ -92,12 +92,15 @@ export default function AdminContacts() {
       });
 
       if (!response.ok) {
-        setError("Reply email could not be sent.");
+        const payload = await response.json().catch(() => null);
+        setError(payload?.error || "Reply email could not be sent.");
         return;
       }
 
       setSuccess(`Reply sent to ${contact.email}.`);
       setReplyDrafts((current) => ({ ...current, [contact.id]: "" }));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Reply email could not be sent.");
     } finally {
       setSendingId(null);
     }

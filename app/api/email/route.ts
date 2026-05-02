@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/emailSender";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+export const runtime = "nodejs";
 
 function getAdminEmail() {
-  return process.env.ADMIN_CONTACT_EMAIL || process.env.MAIL_FROM || "elyanchickenhub@gmail.com";
+  return process.env.ADMIN_CONTACT_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.MAIL_FROM || "elyanchickenhub@gmail.com";
 }
 
 /**
@@ -14,13 +14,6 @@ function getAdminEmail() {
 export async function POST(req: Request) {
   try {
     const { type, email, data } = await req.json();
-
-    if (!resend) {
-      return NextResponse.json(
-        { error: "Email service not configured. Add RESEND_API_KEY to .env" },
-        { status: 500 }
-      );
-    }
 
     let subject = "";
     let html = "";
@@ -180,25 +173,19 @@ export async function POST(req: Request) {
         html = data.html || "<p>Message from ELYAN Chicken Hub</p>";
     }
 
-    const result = await resend.emails.send({
-      from: "ELYAN Chicken Hub <onboarding@resend.dev>",
-      to: type === "contact_admin_notification" ? getAdminEmail() : email,
+    const targetEmail = type === "contact_admin_notification" ? getAdminEmail() : email;
+
+    const result = await sendEmail({
+      to: targetEmail,
       subject,
       html,
     });
 
-    if (result.error) {
-      return NextResponse.json(
-        { error: result.error.message },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json({ success: true, id: result.data?.id });
+    return NextResponse.json({ success: true, id: result.id, provider: result.provider });
   } catch (error) {
     console.error("Email send error:", error);
     return NextResponse.json(
-      { error: "Failed to send email" },
+      { error: error instanceof Error ? error.message : "Failed to send email" },
       { status: 500 }
     );
   }
