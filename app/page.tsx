@@ -43,7 +43,18 @@ export default function Home() {
         {/* RIGHT - CAROUSEL */}
         <div className="relative flex flex-col items-center justify-center p-2 w-[420px] min-h-[320px] transition-all duration-500">
           <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">{slides[current].title}</h3>
-          <Image src={slides[current].image} alt={slides[current].title} width={320} height={320} className="rounded-xl object-cover w-[320px] h-[320px]" />
+          <img
+            src={slides[current].image}
+            alt={slides[current].title}
+            className="rounded-xl object-cover w-[320px] h-[320px]"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.dataset.fallbackApplied) {
+                target.dataset.fallbackApplied = "true";
+                target.src = "/pc1.png";
+              }
+            }}
+          />
           <p className="mt-3 text-gray-600 text-sm text-center">{slides[current].description}</p>
           <div className="flex gap-2 mt-4">
             {slides.map((_, i) => (
