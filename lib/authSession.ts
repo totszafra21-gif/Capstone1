@@ -3,7 +3,7 @@
  * Handles session refresh, token validation, and graceful error recovery
  */
 
-import { supabase } from "./supabase";
+import { supabase, supabaseStorageKey } from "./supabase";
 import { User, Session } from "@supabase/supabase-js";
 
 /**
@@ -90,6 +90,10 @@ export async function signOut(): Promise<void> {
     await supabase.auth.signOut();
   } catch (error) {
     console.error("Sign out error:", error);
+  } finally {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(supabaseStorageKey);
+    }
   }
 }
 
@@ -99,7 +103,7 @@ export async function signOut(): Promise<void> {
 export function isAuthenticated(): boolean {
   if (typeof window === "undefined") return false;
   
-  const sessionData = localStorage.getItem("sb-vaxszpsdzbdmzzfixfzk-auth-token");
+  const sessionData = localStorage.getItem(supabaseStorageKey);
   if (!sessionData) return false;
   
   try {

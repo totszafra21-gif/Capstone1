@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Navbar from "../components/Navbar";
+import { sanitizeImagePath } from "@/lib/imagePath";
 
 type MenuItem = {
   id: string;
@@ -18,7 +19,7 @@ function normalizeMenuItem(item: MenuItem): MenuItem {
     return {
       ...item,
       name: "Chicken with Lumpia",
-      image: "/lumpia-with-chicken.png",
+      image: sanitizeImagePath("/lumpia-with-chicken.png"),
     };
   }
 
@@ -106,7 +107,7 @@ export default function MenuPage() {
 
             return (
             <div key={item.id} className="bg-white p-5 rounded-2xl shadow-md text-center hover:shadow-lg transition">
-              <Image src={normalizedItem.image} alt={normalizedItem.name} width={180} height={180} className="mx-auto rounded-xl object-cover w-[180px] h-[180px]" />
+              <Image src={sanitizeImagePath(normalizedItem.image)} alt={normalizedItem.name} width={180} height={180} className="mx-auto rounded-xl object-cover w-[180px] h-[180px]" />
               <h4 className="mt-4 font-semibold text-gray-800">{normalizedItem.name}</h4>
               <p className="text-orange-500 font-bold mt-1">₱{normalizedItem.price}</p>
               <button

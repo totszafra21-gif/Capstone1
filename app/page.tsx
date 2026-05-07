@@ -27,10 +27,10 @@ export default function Home() {
       <section className="flex items-start justify-between px-24 py-16 bg-white shadow-sm mt-20 gap-10">
 
         {/* LEFT - HERO TEXT */}
-        <div className="max-w-lg text-center flex-1 space-y-4">
+        <div className="max-w-xl text-center flex-1 space-y-4">
           <h2 className="text-6xl font-extrabold leading-tight sm:text-7xl">
-            Crispy & Delicious<br />
-            <span className="inline-block pl-6">Fried Chicken 🍗</span>
+            Crispy&Delicious
+            <span className="mt-2 block">FriedChicken</span>
           </h2>
           <p className="text-gray-500 mb-8 leading-relaxed">
             is your go-to spot for crispy and juicy fried chicken and tasty wings. We prepare every dish fresh to give you the best flavor in every bite—perfect for students, families, and chicken lovers.
@@ -41,7 +41,7 @@ export default function Home() {
         </div>
 
         {/* RIGHT - CAROUSEL */}
-        <div className="relative flex flex-col items-center justify-center bg-white rounded-2xl p-8 w-[420px] min-h-[320px] shadow-lg transition-all duration-500">
+        <div className="relative flex flex-col items-center justify-center p-2 w-[420px] min-h-[320px] transition-all duration-500">
           <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">{slides[current].title}</h3>
           <Image src={slides[current].image} alt={slides[current].title} width={320} height={320} className="rounded-xl object-cover w-[320px] h-[320px]" />
           <p className="mt-3 text-gray-600 text-sm text-center">{slides[current].description}</p>
@@ -130,17 +130,22 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="bg-gray-900 text-white mt-auto">
-        <div className="max-w-7xl mx-auto px-10 py-4 grid grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-10 py-3 grid gap-6 md:grid-cols-3">
           <div>
             <h4 className="text-base font-bold mb-1 text-orange-400">ELYAN Chicken Hub</h4>
             <p className="text-gray-300 text-xs">Serving crispy and delicious fried chicken, wings, and combo meals. Made fresh and perfect for everyone.</p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold mb-1">Contact</h4>
+            <h4 className="text-sm font-semibold mb-1">Reach Us</h4>
             <p className="text-gray-300 text-xs">📍 Philippines</p>
             <p className="text-gray-300 text-xs">📞 0912-345-6789</p>
             <p className="text-gray-300 text-xs">✉️ elyanchickenhub@gmail.com</p>
           </div>
+          <div>
+            <h4 className="text-sm font-semibold mb-1">Store Info</h4>
+            <p className="text-gray-300 text-xs"><span className="font-semibold text-white">Store Hours:</span> 9:00 AM - 9:00 PM</p>
+            <p className="mt-2 text-gray-300 text-xs"><span className="font-semibold text-white">Delivery Areas:</span> Talamban, Banilad, Lahug</p>
+</div>
         </div>
         <div className="text-center border-t border-gray-700 py-2 text-gray-400 text-xs">
           © 2026 ELYAN Chicken Hub. All rights reserved.
@@ -149,3 +154,9 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+

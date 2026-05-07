@@ -6,6 +6,7 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import Navbar from "../components/Navbar";
 import { getAuthToken } from "@/lib/authSession";
+import { sanitizeImagePath } from "@/lib/imagePath";
 
 type OrderItem = {
   quantity: number;
@@ -137,7 +138,7 @@ export default function OrdersPage() {
                 <div className="border-t pt-4 space-y-3">
                   {order.order_items.map((item, index) => (
                     <div key={index} className="flex items-center gap-4">
-                      <Image src={item.menu_items.image} alt={item.menu_items.name} width={60} height={60} className="rounded-lg" />
+                      <Image src={sanitizeImagePath(item.menu_items.image)} alt={item.menu_items.name} width={60} height={60} className="rounded-lg" />
                       <div className="flex-1">
                         <p className="font-semibold">{item.menu_items.name}</p>
                         <p className="text-gray-500 text-sm">x{item.quantity}</p>
@@ -173,6 +174,29 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
+
+      <footer className="mt-10 bg-gray-900 text-white">
+        <div className="mx-auto grid max-w-7xl gap-6 px-10 py-3 md:grid-cols-3">
+          <div>
+            <h4 className="mb-1 text-base font-bold text-orange-400">ELYAN Chicken Hub</h4>
+            <p className="text-xs text-gray-300">Serving crispy and delicious fried chicken, wings, and combo meals.</p>
+          </div>
+          <div>
+            <h4 className="mb-1 text-sm font-semibold">Reach Us</h4>
+            <p className="text-xs text-gray-300">Philippines</p>
+            <p className="text-xs text-gray-300">0912-345-6789</p>
+            <p className="text-xs text-gray-300">elyanchickenhub@gmail.com</p>
+          </div>
+          <div>
+            <h4 className="mb-1 text-sm font-semibold">Store Info</h4>
+            <p className="text-xs text-gray-300">Store Hours: 9:00 AM - 9:00 PM</p>
+            <p className="mt-2 text-xs text-gray-300">Delivery Areas: Talamban, Banilad, Lahug</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
+
+
+

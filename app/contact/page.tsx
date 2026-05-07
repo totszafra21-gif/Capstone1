@@ -14,20 +14,60 @@ export default function ContactPage() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
+  const [fieldError, setFieldError] = useState("");
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push("/login");
-    });
-  }, []);
+    async function fetchUserDetails() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setName(profile.full_name || "");
+        setEmail(profile.email || user.email || "");
+      } else {
+        setEmail(user.email || "");
+      }
+    }
+
+    void fetchUserDetails();
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setStatus("");
+    setFieldError("");
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedMessage) {
+      setFieldError("Please fill in your name, email, and message.");
+      setLoading(false);
+      return;
+    }
+
+    if (trimmedMessage.length < 10) {
+      setFieldError("Please enter a more complete message.");
+      setLoading(false);
+      return;
+    }
 
     // Validate email security
-    const emailValidation = validateEmailSecurity(email);
+    const emailValidation = validateEmailSecurity(trimmedEmail);
     if (!emailValidation.isValid) {
       setStatus(emailValidation.errors.join(". "));
       setLoading(false);
@@ -35,30 +75,24 @@ export default function ContactPage() {
     }
 
     // Sanitize inputs
-    const sanitizedName = sanitizeEmailInput(name).replace(/[<>]/g, "");
-    const sanitizedEmail = sanitizeEmailInput(email);
-    const sanitizedMessage = sanitizeEmailInput(message).replace(/[<>]/g, "");
+    const sanitizedName = sanitizeEmailInput(trimmedName).replace(/[<>]/g, "");
+    const sanitizedEmail = sanitizeEmailInput(trimmedEmail);
+    const sanitizedMessage = sanitizeEmailInput(trimmedMessage).replace(/[<>]/g, "");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    const { error } = await supabase.from("contacts").insert({ name: sanitizedName, email: sanitizedEmail, message: sanitizedMessage });
+    const { error } = await supabase.from("contacts").insert({
+      user_id: user?.id,
+      name: sanitizedName,
+      email: sanitizedEmail,
+      message: sanitizedMessage,
+    });
 
     if (error) {
       setStatus("Failed to send message. Please try again.");
     } else {
-      await fetch("/api/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "contact_admin_notification",
-          email: sanitizedEmail,
-          data: {
-            name: sanitizedName,
-            senderEmail: sanitizedEmail,
-            message: sanitizedMessage,
-          },
-        }),
-      });
-
-      setStatus("Message sent successfully! We'll get back to you soon.");
+      setStatus("Message sent successfully! You can view admin replies in Messages.");
       setName("");
       setEmail("");
       setMessage("");
@@ -70,8 +104,8 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="flex items-center justify-center pt-28 pb-10">
-        <div className="bg-white p-10 rounded-2xl shadow-lg w-[500px]">
+      <div className="flex items-center justify-center px-4 pt-28 pb-10">
+        <div className="w-full max-w-[500px] rounded-2xl bg-white p-10 shadow-lg">
           <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-2">Contact Us</h1>
           <p className="text-center text-gray-500 text-sm mb-6">Have a question or concern? Send us a message!</p>
 
@@ -85,6 +119,7 @@ export default function ContactPage() {
                 placeholder="Enter your name"
                 className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
                 required
+                minLength={2}
               />
             </div>
             <div>
@@ -120,8 +155,13 @@ export default function ContactPage() {
                 rows={5}
                 className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:border-orange-500"
                 required
+                minLength={10}
               />
             </div>
+
+            {fieldError && (
+              <p className="text-center text-sm text-red-500">{fieldError}</p>
+            )}
 
             {status && (
               <p className={`text-sm text-center ${status.includes("Failed") ? "text-red-500" : "text-green-600"}`}>
@@ -143,8 +183,27 @@ export default function ContactPage() {
             <p>📞 0912-345-6789</p>
             <p>✉️ elyanchickenhub@gmail.com</p>
           </div>
+        </div>      </div>      <footer className="mt-10 bg-gray-900 text-white">
+        <div className="mx-auto grid max-w-7xl gap-6 px-10 py-3 md:grid-cols-3">
+          <div>
+            <h4 className="mb-1 text-base font-bold text-orange-400">ELYAN Chicken Hub</h4>
+            <p className="text-xs text-gray-300">Serving crispy and delicious fried chicken, wings, and combo meals.</p>
+          </div>
+          <div>
+            <h4 className="mb-1 text-sm font-semibold">Reach Us</h4>
+            <p className="text-xs text-gray-300">Philippines</p>
+            <p className="text-xs text-gray-300">0912-345-6789</p>
+            <p className="text-xs text-gray-300">elyanchickenhub@gmail.com</p>
+          </div>
+          <div>
+            <h4 className="mb-1 text-sm font-semibold">Store Info</h4>
+            <p className="text-xs text-gray-300">Store Hours: 9:00 AM - 9:00 PM</p>
+            <p className="mt-2 text-xs text-gray-300">Delivery Areas: Talamban, Banilad, Lahug</p>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
+
+

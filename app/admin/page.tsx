@@ -22,6 +22,10 @@ type OrderRecord = {
     quantity: number;
     menu_items?: {
       name: string;
+      category?: string | null;
+    } | {
+      name: string;
+      category?: string | null;
     }[] | null;
   }[];
 };
@@ -38,6 +42,8 @@ type UsagePoint = {
   label: string;
   chickenKg: number;
   lumpiaPacks: number;
+  riceServings: number;
+  softdrinksServings: number;
 };
 
 const dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
@@ -96,6 +102,25 @@ function estimateLumpiaPacksFromItem(name: string, quantity: number) {
   return name.toLowerCase().includes("lumpia") ? quantity : 0;
 }
 
+function estimateRiceServingsFromItem(name: string, quantity: number) {
+  return name.toLowerCase().includes("rice") ? quantity : 0;
+}
+
+function estimateSoftdrinksServingsFromItem(name: string, category: string, quantity: number) {
+  const lowerName = name.toLowerCase();
+  const lowerCategory = category.toLowerCase();
+  const isDrink = lowerCategory.includes("drink")
+    || lowerCategory.includes("beverage")
+    || lowerName.includes("softdrink")
+    || lowerName.includes("soft drink")
+    || lowerName.includes("coke")
+    || lowerName.includes("sprite")
+    || lowerName.includes("royal")
+    || lowerName.includes("pepsi");
+
+  return isDrink ? quantity : 0;
+}
+
 function getLast7DaysUsage(orders: OrderRecord[]): UsagePoint[] {
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
@@ -107,6 +132,8 @@ function getLast7DaysUsage(orders: OrderRecord[]): UsagePoint[] {
       label: dayFormatter.format(date),
       chickenKg: 0,
       lumpiaPacks: 0,
+      riceServings: 0,
+      softdrinksServings: 0,
     };
   });
 
@@ -122,11 +149,17 @@ function getLast7DaysUsage(orders: OrderRecord[]): UsagePoint[] {
       if (!bucket) return;
 
       order.order_items?.forEach((item) => {
-        const itemName = item.menu_items?.[0]?.name || "";
+        const menuItem = Array.isArray(item.menu_items)
+          ? item.menu_items[0]
+          : item.menu_items;
+        const itemName = menuItem?.name || "";
+        const itemCategory = menuItem?.category || "";
         const itemQuantity = Number(item.quantity) || 0;
 
         bucket.chickenKg += estimateChickenKgFromItem(itemName, itemQuantity);
         bucket.lumpiaPacks += estimateLumpiaPacksFromItem(itemName, itemQuantity);
+        bucket.riceServings += estimateRiceServingsFromItem(itemName, itemQuantity);
+        bucket.softdrinksServings += estimateSoftdrinksServingsFromItem(itemName, itemCategory, itemQuantity);
       });
     });
 
@@ -226,7 +259,7 @@ export default function AdminDashboard() {
             supabase.from("orders").select("total"),
             supabase
               .from("orders")
-              .select("id, total, status, created_at, order_items(quantity, menu_items(name))")
+              .select("id, total, status, created_at, order_items(quantity, menu_items(name, category))")
               .order("created_at", { ascending: true }),
           ]);
 
@@ -259,13 +292,20 @@ export default function AdminDashboard() {
   );
   const peakChickenDay = usageData.reduce(
     (top, current) => (current.chickenKg > top.chickenKg ? current : top),
-    usageData[0] || { day: "", label: "-", chickenKg: 0, lumpiaPacks: 0 }
+    usageData[0] || { day: "", label: "-", chickenKg: 0, lumpiaPacks: 0, riceServings: 0, softdrinksServings: 0 }
   );
   const peakLumpiaDay = usageData.reduce(
     (top, current) => (current.lumpiaPacks > top.lumpiaPacks ? current : top),
-    usageData[0] || { day: "", label: "-", chickenKg: 0, lumpiaPacks: 0 }
+    usageData[0] || { day: "", label: "-", chickenKg: 0, lumpiaPacks: 0, riceServings: 0, softdrinksServings: 0 }
   );
-  const todayUsage = usageData[usageData.length - 1] || { day: "", label: "Today", chickenKg: 0, lumpiaPacks: 0 };
+  const todayUsage = usageData[usageData.length - 1] || {
+    day: "",
+    label: "Today",
+    chickenKg: 0,
+    lumpiaPacks: 0,
+    riceServings: 0,
+    softdrinksServings: 0,
+  };
   const statusItems = [
     { label: "Pending", count: recentOrders.filter((order) => order.status === "pending").length, color: "bg-amber-400" },
     { label: "Preparing", count: recentOrders.filter((order) => order.status === "preparing").length, color: "bg-blue-400" },
@@ -428,12 +468,12 @@ export default function AdminDashboard() {
           <div className="flex flex-col gap-2 mb-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-500">Ingredient Usage</p>
-              <h3 className="text-2xl font-bold text-gray-900">Chicken kilos and lumpia packs per day</h3>
+              <h3 className="text-2xl font-bold text-gray-900">Chicken, rice, lumpia, and softdrinks per day</h3>
             </div>
             <p className="text-sm text-gray-500">Based on all non-cancelled orders from the last 7 days</p>
           </div>
 
-          <div className="grid gap-4 mb-6 md:grid-cols-3">
+          <div className="grid gap-4 mb-6 md:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-xl border border-orange-100 bg-orange-50/60 p-4">
               <p className="text-sm text-gray-500">Today&apos;s chicken used</p>
               <p className="mt-2 text-2xl font-bold text-gray-900">{formatKg(todayUsage.chickenKg)}</p>
@@ -443,9 +483,33 @@ export default function AdminDashboard() {
               <p className="mt-2 text-2xl font-bold text-gray-900">{todayUsage.lumpiaPacks} packs</p>
             </div>
             <div className="rounded-xl border border-orange-100 bg-orange-50/60 p-4">
-              <p className="text-sm text-gray-500">Peak usage day</p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">{peakChickenDay.label}</p>
-              <p className="text-sm text-gray-600">{formatKg(peakChickenDay.chickenKg)} chicken</p>
+              <p className="text-sm text-gray-500">Today&apos;s rice servings</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">{todayUsage.riceServings} servings</p>
+            </div>
+            <div className="rounded-xl border border-orange-100 bg-orange-50/60 p-4">
+              <p className="text-sm text-gray-500">Today&apos;s softdrinks</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">{todayUsage.softdrinksServings} servings</p>
+            </div>
+          </div>
+
+          <div className="mb-6 rounded-xl border border-orange-100 bg-orange-50/60 p-4">
+            <p className="text-sm text-gray-500">Peak usage day</p>
+            <p className="mt-2 text-2xl font-bold text-gray-900">{peakChickenDay.label}</p>
+            <p className="text-sm text-gray-600">{formatKg(peakChickenDay.chickenKg)} chicken</p>
+          </div>
+
+          <div className="grid gap-4 mb-6 sm:grid-cols-2">
+            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <p className="text-sm text-gray-500">Highest rice day</p>
+              <p className="mt-2 text-lg font-bold text-gray-900">
+                {usageData.reduce((top, current) => (current.riceServings > top.riceServings ? current : top), usageData[0] || todayUsage).label}
+              </p>
+            </div>
+            <div className="rounded-xl border border-orange-100 bg-orange-50/60 p-4">
+              <p className="text-sm text-gray-500">Highest softdrinks day</p>
+              <p className="mt-2 text-lg font-bold text-gray-900">
+                {usageData.reduce((top, current) => (current.softdrinksServings > top.softdrinksServings ? current : top), usageData[0] || todayUsage).label}
+              </p>
             </div>
           </div>
 
@@ -507,12 +571,14 @@ export default function AdminDashboard() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-500">{point.label}</p>
                 <p className="mt-2 text-lg font-bold text-gray-900">{formatKg(point.chickenKg)}</p>
                 <p className="text-sm text-gray-600">{point.lumpiaPacks} lumpia packs</p>
+                <p className="text-sm text-gray-600">{point.riceServings} rice servings</p>
+                <p className="text-sm text-gray-600">{point.softdrinksServings} softdrinks</p>
               </div>
             ))}
           </div>
 
           <p className="mt-4 text-xs text-gray-500">
-            Estimates use menu item names: 1 PC chicken = 0.25 kg, 2 PC chicken = 0.5 kg, wings = 0.3 kg, lumpia items = 1 pack each.
+            Estimates use menu item names and category: 1 PC chicken = 0.25 kg, 2 PC chicken = 0.5 kg, wings = 0.3 kg, lumpia items = 1 pack, rice items = 1 serving, drinks category/softdrink names = 1 serving.
           </p>
           <p className="text-xs text-gray-500">
             Highest lumpia day this week: {peakLumpiaDay.label} with {peakLumpiaDay.lumpiaPacks} packs.

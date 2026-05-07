@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { getAuthenticatedUser } from "@/lib/authSession";
+import { sanitizeImagePath } from "@/lib/imagePath";
 
 type MenuItem = { id: string; name: string; price: number; image: string; category: string };
 
@@ -16,6 +17,15 @@ export default function AdminMenu() {
   const [editing, setEditing] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [lastUpdated, setLastUpdated] = useState("");
+
+  const fetchItems = useCallback(async () => {
+    const { data } = await supabase.from("menu_items").select("*").order("name");
+    if (data) {
+      setItems(data);
+      setLastUpdated(new Date().toLocaleString());
+    }
+  }, []);
 
   useEffect(() => {
     async function checkAdminAndFetch() {
@@ -39,18 +49,13 @@ export default function AdminMenu() {
           router.push("/");
           return;
         }
-        fetchItems();
+        await fetchItems();
       } catch {
         setError("Network error. Please check your connection then refresh.");
       }
     }
     checkAdminAndFetch();
-  }, []);
-
-  async function fetchItems() {
-    const { data } = await supabase.from("menu_items").select("*").order("name");
-    if (data) setItems(data);
-  }
+  }, [fetchItems, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,14 +68,14 @@ export default function AdminMenu() {
       setMessage("Item added!");
     }
     setForm({ name: "", price: "", image: "", category: "meals" });
-    fetchItems();
+    await fetchItems();
     setTimeout(() => setMessage(""), 2000);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this item?")) return;
     await supabase.from("menu_items").delete().eq("id", id);
-    fetchItems();
+    await fetchItems();
   }
 
   function handleEdit(item: MenuItem) {
@@ -98,7 +103,21 @@ export default function AdminMenu() {
       </aside>
 
       <main className="flex-1 p-10">
-        <h2 className="text-3xl font-bold mb-8">Menu Items</h2>
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-3xl font-bold">Menu Items</h2>
+            {lastUpdated && (
+              <p className="mt-1 text-sm text-gray-500">Last updated: {lastUpdated}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => void fetchItems()}
+            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Refresh Inventory
+          </button>
+        </div>
         {error && (
           <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
             {error}
@@ -140,7 +159,7 @@ export default function AdminMenu() {
             <tbody>
               {items.map((item) => (
                 <tr key={item.id} className="border-t">
-                  <td className="p-4"><Image src={item.image} alt={item.name} width={50} height={50} className="rounded" /></td>
+                  <td className="p-4"><Image src={sanitizeImagePath(item.image)} alt={item.name} width={50} height={50} className="rounded" /></td>
                   <td className="p-4 font-semibold">{item.name}</td>
                   <td className="p-4">₱{item.price}</td>
                   <td className="p-4 capitalize">{item.category}</td>

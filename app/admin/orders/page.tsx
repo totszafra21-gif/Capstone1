@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -23,54 +23,79 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState("");
+
+  const fetchOrders = useCallback(async (manualRefresh = false) => {
+    setError("");
+    if (manualRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      const user = await getAuthenticatedUser();
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        setError("Failed to verify admin access. Please try again.");
+        return;
+      }
+
+      if (!profile?.is_admin) {
+        router.push("/");
+        return;
+      }
+
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        const ordersWithProfiles = await Promise.all(
+          data.map(async (order) => {
+            const { data: orderProfile } = await supabase
+              .from("profiles")
+              .select("full_name, email")
+              .eq("id", order.user_id)
+              .single();
+
+            return { ...order, profiles: orderProfile };
+          })
+        );
+
+        setOrders(ordersWithProfiles as unknown as Order[]);
+        setLastUpdated(new Date().toLocaleString());
+      }
+    } catch {
+      setError("Network error. Please check your connection then refresh.");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [router]);
 
   useEffect(() => {
-    async function checkAdminAndFetch() {
-      setError("");
-      try {
-        const user = await getAuthenticatedUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
+    void fetchOrders();
 
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", user.id)
-          .single();
+    const interval = setInterval(() => {
+      void fetchOrders(true);
+    }, 30000);
 
-        if (profileError) {
-          setError("Failed to verify admin access. Please try again.");
-          return;
-        }
-
-        if (!profile?.is_admin) {
-          router.push("/");
-          return;
-        }
-
-        const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
-
-        if (data) {
-          const ordersWithProfiles = await Promise.all(
-            data.map(async (order) => {
-              const { data: profile } = await supabase
-                .from("profiles")
-                .select("full_name, email")
-                .eq("id", order.user_id)
-                .single();
-              return { ...order, profiles: profile };
-            })
-          );
-          setOrders(ordersWithProfiles as unknown as Order[]);
-        }
-      } catch {
-        setError("Network error. Please check your connection then refresh.");
-      }
-    }
-    checkAdminAndFetch();
-  }, []);
+    return () => clearInterval(interval);
+  }, [fetchOrders]);
 
   async function updateStatus(id: string, status: string) {
     setError("");
@@ -82,15 +107,20 @@ export default function AdminOrders() {
       return;
     }
 
-    const { error: updateError } = await supabase.from("orders").update({ status }).eq("id", id);
+    const { error: updateError } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", id);
 
     if (updateError) {
       setError("Failed to update order status.");
       return;
     }
 
-    const updatedOrders = orders.map((item) => (item.id === id ? { ...item, status } : item));
-    setOrders(updatedOrders);
+    setOrders((current) =>
+      current.map((item) => (item.id === id ? { ...item, status } : item))
+    );
+    setLastUpdated(new Date().toLocaleString());
 
     if ((status === "preparing" || status === "ready") && order.profiles?.email) {
       const emailType = status === "preparing" ? "order_preparing" : "order_ready";
@@ -140,7 +170,23 @@ export default function AdminOrders() {
       </aside>
 
       <main className="flex-1 p-10">
-        <h2 className="text-3xl font-bold mb-8">Orders</h2>
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-3xl font-bold">Orders</h2>
+            {lastUpdated && (
+              <p className="mt-1 text-sm text-gray-500">Last updated: {lastUpdated}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => void fetchOrders(true)}
+            disabled={refreshing}
+            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {refreshing ? "Refreshing..." : "Refresh Orders"}
+          </button>
+        </div>
+
         {error && (
           <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
             {error}
@@ -151,44 +197,69 @@ export default function AdminOrders() {
             {statusMessage}
           </div>
         )}
-        <div className="bg-white rounded-xl shadow overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="p-4 text-left">Customer</th>
-                <th className="p-4 text-left">Total</th>
-                <th className="p-4 text-left">Payment</th>
-                <th className="p-4 text-left">Date</th>
-                <th className="p-4 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-t">
-                  <td className="p-4">
-                    <p className="font-semibold">{order.profiles?.full_name}</p>
-                    <p className="text-gray-400 text-xs">{order.profiles?.email}</p>
-                  </td>
-                  <td className="p-4 font-semibold">₱{order.total}</td>
-                  <td className="p-4 capitalize">{order.payment_method}</td>
-                  <td className="p-4 text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
-                  <td className="p-4">
-                    <select
-                      value={order.status}
-                      onChange={(e) => updateStatus(order.id, e.target.value)}
-                      className="border border-gray-300 rounded-lg p-1 text-sm focus:outline-none focus:border-orange-500"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="preparing">Preparing</option>
-                      <option value="ready">Ready</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </td>
+
+        <div className="overflow-hidden rounded-xl bg-white shadow">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600">
+                <tr>
+                  <th className="p-4 text-left">Customer</th>
+                  <th className="p-4 text-left">Total</th>
+                  <th className="p-4 text-left">Payment</th>
+                  <th className="p-4 text-left">Date</th>
+                  <th className="p-4 text-left">Delivery</th>
+                  <th className="p-4 text-left">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading && (
+                  <tr>
+                    <td colSpan={6} className="p-6 text-center text-gray-500">
+                      Loading orders...
+                    </td>
+                  </tr>
+                )}
+
+                {!loading && orders.map((order) => (
+                  <tr key={order.id} className="border-t align-top">
+                    <td className="p-4">
+                      <p className="font-semibold">{order.profiles?.full_name || "Unknown customer"}</p>
+                      <p className="text-xs text-gray-400">{order.profiles?.email || "No email"}</p>
+                    </td>
+                    <td className="p-4 font-semibold">PHP {order.total}</td>
+                    <td className="p-4 capitalize">{order.payment_method}</td>
+                    <td className="p-4 text-gray-500">{new Date(order.created_at).toLocaleString()}</td>
+                    <td className="p-4 text-xs text-gray-600">
+                      <p className="font-medium text-gray-800">{order.shipping_name || "-"}</p>
+                      <p>{order.shipping_phone || "-"}</p>
+                      <p>{order.shipping_address || "-"}</p>
+                    </td>
+                    <td className="p-4">
+                      <select
+                        value={order.status}
+                        onChange={(e) => void updateStatus(order.id, e.target.value)}
+                        className="rounded-lg border border-gray-300 p-1 text-sm focus:border-orange-500 focus:outline-none"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="ready">Ready</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+
+                {!loading && orders.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-6 text-center text-gray-500">
+                      No orders yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>

@@ -147,6 +147,22 @@ export async function POST(req: Request) {
         `;
         break;
 
+      case "contact_user_confirmation":
+        subject = "We received your message - ELYAN Chicken Hub";
+        html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #f97316;">ELYAN Chicken Hub</h1>
+            <h2>Hello${data.name ? `, ${data.name}` : ""}!</h2>
+            <p>We received your message successfully.</p>
+            <p>Our team will review it and get back to you as soon as possible.</p>
+            <p><strong>Your message:</strong></p>
+            <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+              ${data.message}
+            </div>
+          </div>
+        `;
+        break;
+
       case "contact_reply":
         subject = `Reply from ELYAN Chicken Hub`;
         html = `
